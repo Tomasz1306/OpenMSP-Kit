@@ -4,6 +4,7 @@ import com.msp.openmsp_kit.model.movie.AbstractMovie;
 import com.msp.openmsp_kit.model.movie.MovieAwardsInfo;
 import com.msp.openmsp_kit.model.movie.MoviePeopleInfo;
 
+import java.util.List;
 import java.util.Optional;
 
 public class OMDBMovie extends AbstractMovie
@@ -20,6 +21,11 @@ public class OMDBMovie extends AbstractMovie
         this.director = omdbMovieBuilder.director;
         this.writer = omdbMovieBuilder.writer;
         this.actors = omdbMovieBuilder.actors;
+    }
+
+    @Override
+    public List<Genre> getGenres() {
+        return List.of();
     }
 
 

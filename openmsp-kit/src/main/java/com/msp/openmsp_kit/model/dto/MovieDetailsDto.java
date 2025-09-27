@@ -1,6 +1,12 @@
 package com.msp.openmsp_kit.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.msp.openmsp_kit.model.movie.impl.Genre;
+import com.msp.openmsp_kit.model.movie.impl.ProductionCompany;
+import com.msp.openmsp_kit.model.movie.impl.ProductionCountry;
+import com.msp.openmsp_kit.model.movie.impl.SpokenLanguage;
+
+import java.util.List;
 
 public record MovieDetailsDto(
         @JsonProperty("adult")
@@ -44,6 +50,14 @@ public record MovieDetailsDto(
         @JsonProperty("vote_average")
         double voteAverage,
         @JsonProperty("vote_count")
-        int voteCount
+        int voteCount,
+        @JsonProperty("genres")
+        List<Genre> genres,
+        @JsonProperty("production_companies")
+        List<ProductionCompany> productionCOmpanies,
+        @JsonProperty("production_countries")
+        List<ProductionCountry> productionCountries,
+        @JsonProperty("spoken_languages")
+        List<SpokenLanguage> spokenLanguages
 ) {
 }
