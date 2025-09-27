@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: openmsp-kit
+
+tmdb:
+  api-key: ${TMDB_API_KEY}
+  source: ${SOURCE}
