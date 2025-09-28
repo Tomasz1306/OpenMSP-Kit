@@ -1,7 +1,7 @@
 package com.msp.openmsp_kit.service.downloader.impl;
 
 import com.msp.openmsp_kit.config.OpenMSPConfig;
-import com.msp.openmsp_kit.model.dto.MovieDetailsDto;
+import com.msp.openmsp_kit.model.api.tmdb.TMDBMovieDetailsResponse;
 import com.msp.openmsp_kit.model.result.Result;
 import com.msp.openmsp_kit.service.downloader.BuildRequest;
 import com.msp.openmsp_kit.service.downloader.Downloader;
@@ -25,14 +25,14 @@ public class TMDBMovieDetailsDownloader implements Downloader<Result, String> {
     }
 
     @Override
-    public Result<MovieDetailsDto> fetch(String movieId) {
+    public Result<TMDBMovieDetailsResponse> fetch(String movieId) {
         try {
             var jsonBody = httpClientManager
                     .getHttpClient()
                     .send(BuildRequest.buildRequest(buildUri(movieId), config.getTmdbApiKey()),
                             HttpResponse.BodyHandlers.ofString())
                     .body();
-            MovieDetailsDto data = jsonParser.parseBody(jsonBody, MovieDetailsDto.class);
+            TMDBMovieDetailsResponse data = jsonParser.parseBody(jsonBody, TMDBMovieDetailsResponse.class);
             return new Result<>(movieId, true, data, "");
         } catch (Exception e) {
             return new Result<>(movieId, false, null, e.getMessage());

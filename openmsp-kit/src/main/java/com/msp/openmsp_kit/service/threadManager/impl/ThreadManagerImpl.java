@@ -6,6 +6,8 @@ import com.msp.openmsp_kit.service.rateLimiter.RateLimiter;
 import com.msp.openmsp_kit.service.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -23,7 +25,7 @@ public class ThreadManagerImpl {
     }
 
     public List<Result<?>> processTasks(List<Task> tasks) {
-        List<Result<?>> results = tasks
+        List<List<Result<?>>> results = tasks
                 .stream()
                 .map(
                     task -> {
@@ -42,10 +44,16 @@ public class ThreadManagerImpl {
                         }
                 ).collect(Collectors.toList());
 
-        for (Result<?> result : results) {
+        List<Result<?>> resultList = results
+                .stream()
+                .flatMap(Collection::stream)
+                .toList();
+
+
+        for (Result<?> result : resultList) {
             System.out.println(result.toString());
         }
-        return results;
+        return resultList;
     }
 
 }
