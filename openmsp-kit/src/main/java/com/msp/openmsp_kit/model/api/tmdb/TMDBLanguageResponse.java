@@ -2,11 +2,11 @@ package com.msp.openmsp_kit.model.api.tmdb;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record TMDBLanguagesResponse(
+public record TMDBLanguageResponse(
         @JsonProperty("iso_639_1")
         String iso_639_1,
         @JsonProperty("english_name")
-        String english_name,
+        String englishName,
         @JsonProperty("name")
         String name
 ) {
