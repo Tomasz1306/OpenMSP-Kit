@@ -1,10 +1,7 @@
 package com.msp.openmsp_kit.model.persistence.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Set;
 
@@ -14,8 +11,8 @@ import java.util.Set;
 @AllArgsConstructor
 
 @Entity
-@Table(name = "tmdb_movie")
-public class TMDBMovieEntity {
+@Table(name = "tmdb_movies")
+public class TMDBMovieEntity extends AbstractEntity {
 
     @Id
     @Column(name = "tmdb_id")
@@ -29,6 +26,8 @@ public class TMDBMovieEntity {
     private String originalTitle;
     @Column(name = "release_date")
     private String releaseDate;
+    @Column(name = "homepage")
+    private String homepage;
     @Column(name = "ovierview")
     private String overview;
     @Column(name = "language")
@@ -50,35 +49,31 @@ public class TMDBMovieEntity {
     @Column(name = "backdrop_path")
     private String backdropPath;
 
-    @ManyToMany
     @JoinTable(
             name = "MovieProductionCompanies",
             joinColumns = @JoinColumn(name = "movie_id"),
             inverseJoinColumns = @JoinColumn(name = "product_company_id")
     )
-    private Set<ProductionCompanyEntity> productionCompanies;
+    private Set<TMDBProductionCompanyEntity> productionCompanies;
 
-    @ManyToMany
     @JoinTable(
             name = "MovieGenre",
             joinColumns = @JoinColumn(name = "movie_id"),
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
-    private Set<GenreEntity> genres;
+    private Set<TMDBGenreEntity> genres;
 
-    @ManyToMany
     @JoinTable(
             name = "MovieProductionCountry",
             joinColumns = @JoinColumn(name ="movie_id"),
             inverseJoinColumns = @JoinColumn(name = "production_country_id")
     )
-    private Set<ProductionCountryEntity> productionCountries;
+    private Set<TMDBProductionCountryEntity> productionCountries;
 
-    @ManyToMany
     @JoinTable(
             name = "MovieSpokenLanguages",
             joinColumns = @JoinColumn(name ="movie_id"),
             inverseJoinColumns = @JoinColumn(name = "spoken_language_id")
     )
-    private Set<ProductionCountryEntity> spokenLanguages;
+    private Set<TMDBSpokenLanguageEntity> spokenLanguages;
 }
