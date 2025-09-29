@@ -12,13 +12,13 @@ public record TMDBCompanyDetailsResponse(
         @JsonProperty("id")
         Integer id,
         @JsonProperty("logo_path")
-        String logo_path,
+        String logoPath,
         @JsonProperty("name")
         String name,
         @JsonProperty("origin_country")
-        String origin_country,
+        String originCountry,
         @JsonProperty("parent_company")
-        String parent_company
+        String parentCompany
 
 ) {
 }
