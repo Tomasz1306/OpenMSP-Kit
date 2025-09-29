@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class SpokenLanguage {
+public class TMDBSpokenLanguage {
     private String englishName;
     private String iso_639_1;
     private String name;

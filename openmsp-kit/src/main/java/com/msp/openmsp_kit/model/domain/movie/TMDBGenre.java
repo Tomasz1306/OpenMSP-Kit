@@ -10,9 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class ProductionCompany {
+public class TMDBGenre {
     private int id;
-    private String logoPath;
     private String name;
-    private String originCountry;
 }

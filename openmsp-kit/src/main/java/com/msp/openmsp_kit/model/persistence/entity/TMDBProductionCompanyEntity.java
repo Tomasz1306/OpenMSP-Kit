@@ -15,7 +15,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "production_companies")
-public class ProductionCompanyEntity {
+public class TMDBProductionCompanyEntity extends AbstractEntity {
 
     @Id
     @Column(name = "id")
@@ -42,6 +42,6 @@ public class ProductionCompanyEntity {
     @Column(name = "parent_company")
     private String parentCompany;
 
-    @ManyToMany(mappedBy = "movies")
+    @ManyToMany(mappedBy = "productionCompanies")
     private Set<TMDBMovieEntity> tmdbMovies;
 }

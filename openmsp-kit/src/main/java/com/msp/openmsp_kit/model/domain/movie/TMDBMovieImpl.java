@@ -35,8 +35,8 @@ public class TMDBMovieImpl implements Movie, MovieWithRatings {
     private int voteCount;
     private double voteAverage;
     private double popularity;
-    private List<Genre> genres;
-    private List<ProductionCompany> productionCompanies;
-    private List<ProductionCountry> productionCountries;
-    private List<SpokenLanguage> spokenLanguages;
+    private List<TMDBGenre> genres;
+    private List<TMDBProductionCompany> productionCompanies;
+    private List<TMDBProductionCountry> productionCountries;
+    private List<TMDBSpokenLanguage> spokenLanguages;
 }

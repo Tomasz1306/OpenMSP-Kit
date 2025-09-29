@@ -14,20 +14,19 @@ import java.util.Set;
 @AllArgsConstructor
 
 @Entity
-@Table(name = "spoken_languages")
-public class SpokenLanguageEntity {
+@Table(name = "production_countries")
+public class TMDBProductionCountryEntity extends AbstractEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name ="iso_3166_1")
+    private String iso_3166_1;
 
     @Column(name = "english_name")
     private String englishName;
-    @Column(name = "iso_639_1")
-    private String iso_639_1;
-    @Column(name = "name")
-    private String name;
 
-    @ManyToMany(mappedBy = "movies")
+    @Column(name = "native_name")
+    private String nativeName;
+
+    @ManyToMany(mappedBy = "productionCountries")
     private Set<TMDBMovieEntity> tmdbMovies;
 }

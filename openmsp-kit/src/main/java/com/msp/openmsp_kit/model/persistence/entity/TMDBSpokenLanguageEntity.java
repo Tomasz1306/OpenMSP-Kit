@@ -14,15 +14,19 @@ import java.util.Set;
 @AllArgsConstructor
 
 @Entity
-@Table(name = "genres")
-public class GenreEntity {
+@Table(name = "spoken_languages")
+public class TMDBSpokenLanguageEntity extends AbstractEntity {
+
     @Id
-    @Column(name = "id")
-    private String id;
+    @Column(name = "iso_639_1")
+    private String iso_639_1;
+
+    @Column(name = "english_name")
+    private String englishName;
 
     @Column(name = "name")
     private String name;
 
-    @ManyToMany(mappedBy = "movies")
+    @ManyToMany(mappedBy = "spokenLanguages")
     private Set<TMDBMovieEntity> tmdbMovies;
 }

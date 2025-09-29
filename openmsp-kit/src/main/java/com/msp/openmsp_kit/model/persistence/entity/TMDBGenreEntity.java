@@ -14,18 +14,15 @@ import java.util.Set;
 @AllArgsConstructor
 
 @Entity
-@Table(name = "production_countries")
-public class ProductionCountryEntity {
+@Table(name = "genres")
+public class TMDBGenreEntity extends AbstractEntity {
     @Id
-    @GeneratedValue
+    @Column(name = "id")
     private Long id;
-
-    @Column(name ="iso_3166_1")
-    private String iso_3166_1;
 
     @Column(name = "name")
     private String name;
 
-    @ManyToMany(mappedBy = "movies")
+    @ManyToMany(mappedBy = "genres")
     private Set<TMDBMovieEntity> tmdbMovies;
 }

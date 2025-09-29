@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class ProductionCountry {
+public class TMDBProductionCountry {
     private String iso_3166_1;
     private String name;
 }
