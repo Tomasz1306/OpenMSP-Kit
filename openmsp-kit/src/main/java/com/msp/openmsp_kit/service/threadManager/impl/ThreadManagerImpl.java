@@ -2,58 +2,92 @@ package com.msp.openmsp_kit.service.threadManager.impl;
 
 import com.msp.openmsp_kit.model.result.Result;
 import com.msp.openmsp_kit.model.task.Task;
+import com.msp.openmsp_kit.service.database.DatabaseManager;
 import com.msp.openmsp_kit.service.rateLimiter.RateLimiter;
 import com.msp.openmsp_kit.service.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
+import java.util.*;
+import java.util.concurrent.*;
 
 @Service
 public class ThreadManagerImpl {
     private final TaskExecutor taskExecutor;
     private final RateLimiter rateLimiter;
 
+    private final DatabaseManager databaseManager;
+    private final BlockingQueue<List<Result<?>>> saveQueue;
+    private final ExecutorService saveExecutor;
+
+
     public ThreadManagerImpl(TaskExecutor taskExecutor,
-                             RateLimiter rateLimiter) {
+                             RateLimiter rateLimiter,
+                             DatabaseManager databaseManager) {
         this.taskExecutor = taskExecutor;
         this.rateLimiter = rateLimiter;
+        this.databaseManager = databaseManager;
+
+        this.saveQueue = new ArrayBlockingQueue<>(5);
+        this.saveExecutor = Executors.newFixedThreadPool(3);
+
+
     }
 
-    public List<Result<?>> processTasks(List<Task> tasks) {
-        List<List<Result<?>>> results = tasks
-                .stream()
-                .map(
-                    task -> {
-                        return CompletableFuture.supplyAsync(() -> {
-                            rateLimiter.acquire();
-                            return taskExecutor.process(task);
-                        });
-                    }
-                ).map(
-                        future -> {
+    public void runTasks(List<List<Task>> batches) {
+        CompletableFuture<Void> saveEntity = startSaveConsumer();
+
+        try {
+            for  (List<Task> batch : batches) {
+
+                List<Result<?>> batchResult = batch
+                        .stream()
+                        .map(task -> {
+                            return CompletableFuture.supplyAsync(() -> {
+                                rateLimiter.acquire();
+                                return taskExecutor.process(task);
+                            });
+                        }).map(future -> {
                             try {
                                 return future.get();
-                            } catch (InterruptedException | ExecutionException e) {
+                            } catch (InterruptedException e) {
+                                throw new RuntimeException(e);
+                            } catch (ExecutionException e) {
                                 throw new RuntimeException(e);
                             }
-                        }
-                ).collect(Collectors.toList());
+                        })
+                        .flatMap(Collection::stream)
+                        .toList();
 
-        List<Result<?>> resultList = results
-                .stream()
-                .flatMap(Collection::stream)
-                .toList();
+                if (!batchResult.isEmpty()) {
+                    saveQueue.offer(batchResult);
+                }
 
-
-        for (Result<?> result : resultList) {
-            System.out.println(result.toString());
+                saveEntity.get(30, TimeUnit.SECONDS);
+            }
+        } catch (Exception e) {
+            System.err.println("Error: " + e.getMessage());
+            e.printStackTrace();
         }
-        return resultList;
+
     }
 
+    private CompletableFuture<Void> startSaveConsumer() {
+        return CompletableFuture.runAsync(() -> {
+            while(!Thread.currentThread().isInterrupted()) {
+                try {
+                    List<Result<?>> results = saveQueue.take();
+
+                    for (Result<?> result : results) {
+                        databaseManager.saveEntity(result.data());
+                    }
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+    }
+
+    public void shutdown() {
+        saveExecutor.shutdown();
+    }
 }
