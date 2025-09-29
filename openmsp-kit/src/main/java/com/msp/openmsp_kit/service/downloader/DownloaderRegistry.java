@@ -1,11 +1,10 @@
 package com.msp.openmsp_kit.service.downloader;
 
 import com.msp.openmsp_kit.config.OpenMSPConfig;
-import com.msp.openmsp_kit.model.EndPoint;
-import com.msp.openmsp_kit.model.Resource;
-import com.msp.openmsp_kit.model.Source;
-import com.msp.openmsp_kit.service.downloader.impl.HttpClientManager;
-import com.msp.openmsp_kit.service.downloader.impl.TMDBMovieDetailsDownloader;
+import com.msp.openmsp_kit.model.common.EndPoint;
+import com.msp.openmsp_kit.model.common.Resource;
+import com.msp.openmsp_kit.model.common.Source;
+import com.msp.openmsp_kit.service.downloader.impl.*;
 import com.msp.openmsp_kit.service.parser.JsonParser;
 import org.springframework.stereotype.Service;
 
@@ -34,8 +33,23 @@ public class DownloaderRegistry {
                 new DownloaderKey(Source.TMDB, Resource.MOVIE, EndPoint.DETAILS),
                 new TMDBMovieDetailsDownloader(httpClientManager, jsonParser, config)
         );
+        downloaderMap.put(
+                new DownloaderKey(Source.TMDB, Resource.GENRES, EndPoint.CONFIG),
+                new TMDBGenreDownloader(httpClientManager, jsonParser, config)
+        );
+        downloaderMap.put(
+                new DownloaderKey(Source.TMDB, Resource.COUNTRIES, EndPoint.CONFIG),
+                new TMDBCountryDownloader(httpClientManager, jsonParser, config)
+        );
+        downloaderMap.put(
+                new DownloaderKey(Source.TMDB, Resource.COMPANIES, EndPoint.DETAILS),
+                new TMDBCompanyDownloader(httpClientManager, jsonParser, config)
+        );
+        downloaderMap.put(
+                new DownloaderKey(Source.TMDB, Resource.LANGUAGES, EndPoint.CONFIG),
+                new TMDBLanguageDownloader(httpClientManager, jsonParser, config)
+        );
     }
-
 
     public <T, K> Downloader<T, K> getDownloader(Source s, Resource r, EndPoint e) {
         return  downloaderMap.get(new DownloaderKey(s, r, e));

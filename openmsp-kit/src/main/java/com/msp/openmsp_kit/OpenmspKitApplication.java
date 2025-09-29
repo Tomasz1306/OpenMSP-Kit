@@ -4,8 +4,10 @@ import com.msp.openmsp_kit.service.scheduler.Scheduler;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
+@EnableJpaRepositories
 public class OpenmspKitApplication implements CommandLineRunner {
 
     private final Scheduler scheduler;
