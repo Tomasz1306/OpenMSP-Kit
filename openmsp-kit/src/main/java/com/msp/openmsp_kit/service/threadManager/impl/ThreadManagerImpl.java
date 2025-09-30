@@ -35,10 +35,8 @@ public class ThreadManagerImpl {
 
     public void runTasks(List<List<Task>> batches) {
         CompletableFuture<Void> saveEntity = startSaveConsumer();
-
         try {
             for  (List<Task> batch : batches) {
-
                 List<Result<?>> batchResult = batch
                         .stream()
                         .map(task -> {
@@ -49,9 +47,7 @@ public class ThreadManagerImpl {
                         }).map(future -> {
                             try {
                                 return future.get();
-                            } catch (InterruptedException e) {
-                                throw new RuntimeException(e);
-                            } catch (ExecutionException e) {
+                            } catch (InterruptedException | ExecutionException e) {
                                 throw new RuntimeException(e);
                             }
                         })
@@ -62,8 +58,8 @@ public class ThreadManagerImpl {
                     saveQueue.offer(batchResult);
                 }
 
-                saveEntity.get(30, TimeUnit.SECONDS);
             }
+            saveEntity.join();
         } catch (Exception e) {
             System.err.println("Error: " + e.getMessage());
             e.printStackTrace();
@@ -75,10 +71,8 @@ public class ThreadManagerImpl {
         return CompletableFuture.runAsync(() -> {
             while(!Thread.currentThread().isInterrupted()) {
                 try {
-                    List<Result<?>> results = saveQueue.take();
-
-                    for (Result<?> result : results) {
-                        databaseManager.saveEntity(result.data());
+                    if (!databaseManager.isSaving()) {
+                        databaseManager.saveEntity(saveQueue.take());
                     }
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
