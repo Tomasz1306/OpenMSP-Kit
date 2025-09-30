@@ -2,14 +2,16 @@ package com.msp.openmsp_kit.service.downloader.impl;
 
 import com.msp.openmsp_kit.config.OpenMSPConfig;
 import com.msp.openmsp_kit.model.api.tmdb.TMDBCountryResponse;
+import com.msp.openmsp_kit.model.result.Result;
 import com.msp.openmsp_kit.service.downloader.BuildRequest;
 import com.msp.openmsp_kit.service.downloader.Downloader;
 import com.msp.openmsp_kit.service.parser.JsonParser;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.net.URI;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class TMDBCountryDownloader implements Downloader<List<TMDBCountryResponse>, String> {
     private final OpenMSPConfig config;
@@ -32,8 +34,18 @@ public class TMDBCountryDownloader implements Downloader<List<TMDBCountryRespons
                     .send(BuildRequest.buildRequest(buildUri(movieId), config.getTmdbApiKey()),
                             HttpResponse.BodyHandlers.ofString())
                     .body();
-            List<TMDBCountryResponse> countries = new ArrayList<>();
-            return jsonParser.parseBody(jsonBody, countries.getClass());
+
+            JSONArray jsonArray = new JSONArray(jsonBody);
+            List<TMDBCountryResponse> tmdbCountries = new ArrayList<>();
+            for (Object object: jsonArray) {
+                TMDBCountryResponse newResponse = new TMDBCountryResponse(
+                        (String) ((JSONObject)object).get("iso_3166_1"),
+                        (String) ((JSONObject)object).get("english_name"),
+                        (String) ((JSONObject)object).get("native_name")
+                );
+                tmdbCountries.add(newResponse);
+            }
+            return tmdbCountries;
         } catch (Exception e) {
             throw new  RuntimeException(e.getMessage());
         }
