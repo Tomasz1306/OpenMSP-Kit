@@ -28,7 +28,7 @@ public class Scheduler {
     public void run() {
         List<Task> tasks = taskManager.getTasks();
         List<List<Task>> batches = batcher.createBatches(tasks);
-        threadManager.runTasks(batches);
-        threadManager.shutdown();
+        threadManager.runThreads();
+        threadManager.processBatches(batches);
     }
 }
