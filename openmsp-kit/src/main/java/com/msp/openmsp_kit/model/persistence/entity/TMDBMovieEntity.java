@@ -3,6 +3,8 @@ package com.msp.openmsp_kit.model.persistence.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Data
@@ -28,7 +30,7 @@ public class TMDBMovieEntity extends AbstractEntity {
     private String releaseDate;
     @Column(name = "homepage")
     private String homepage;
-    @Column(name = "ovierview")
+    @Column(name = "ovierview", length = 1000)
     private String overview;
     @Column(name = "language")
     private String language;
@@ -49,6 +51,7 @@ public class TMDBMovieEntity extends AbstractEntity {
     @Column(name = "backdrop_path")
     private String backdropPath;
 
+    @ManyToMany
     @JoinTable(
             name = "MovieProductionCompanies",
             joinColumns = @JoinColumn(name = "movie_id"),
@@ -56,6 +59,7 @@ public class TMDBMovieEntity extends AbstractEntity {
     )
     private Set<TMDBProductionCompanyEntity> productionCompanies;
 
+    @ManyToMany
     @JoinTable(
             name = "MovieGenre",
             joinColumns = @JoinColumn(name = "movie_id"),
@@ -63,17 +67,29 @@ public class TMDBMovieEntity extends AbstractEntity {
     )
     private Set<TMDBGenreEntity> genres;
 
+    @ManyToMany
     @JoinTable(
             name = "MovieProductionCountry",
             joinColumns = @JoinColumn(name ="movie_id"),
-            inverseJoinColumns = @JoinColumn(name = "production_country_id")
+            inverseJoinColumns = @JoinColumn(name = "iso_3166_1")
     )
     private Set<TMDBProductionCountryEntity> productionCountries;
 
+    @ManyToMany
     @JoinTable(
             name = "MovieSpokenLanguages",
             joinColumns = @JoinColumn(name ="movie_id"),
-            inverseJoinColumns = @JoinColumn(name = "spoken_language_id")
+            inverseJoinColumns = @JoinColumn(name = "iso_639_1")
     )
     private Set<TMDBSpokenLanguageEntity> spokenLanguages;
+
+    @OneToMany(mappedBy = "movie")
+    private List<TMDBImageEntity> images;
+
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(tmdbId);
+    }
+
 }

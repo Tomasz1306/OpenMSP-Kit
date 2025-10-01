@@ -2,8 +2,12 @@ package com.msp.openmsp_kit.service.database;
 
 import com.msp.openmsp_kit.model.api.tmdb.*;
 import com.msp.openmsp_kit.model.mapper.*;
+import com.msp.openmsp_kit.model.result.Result;
 import com.msp.openmsp_kit.repository.movie.*;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class DatabaseManager {
@@ -42,22 +46,29 @@ public class DatabaseManager {
         this.tmdbSpokenLanguageMapper = tmdbSpokenLanguageMapper;
     }
 
-    public void saveEntity(Object data) {
-        if (data instanceof TMDBMovieDetailsResponse) {
-            tmdbMovieRepository.save(tmdbMovieMapper.toEntityFromApi((TMDBMovieDetailsResponse) data));
+    public void saveEntities(List<Result<?>> results) {
+        for (Result<?> result : results) {
+            saveEntity(result);
         }
-        if (data instanceof TMDBGenreResponse) {
-            tmdbGenreRepository.save(tmdbGenreMapper.toEntityFromApi((TMDBGenreResponse) data));
-        }
-        if (data instanceof TMDBCountryResponse) {
-            tmdbCountryRepository.save(tmdbProductionCountryMapper.toEntityFromApi((TMDBCountryResponse) data));
-        }
-        if (data instanceof TMDBCompanyDetailsResponse) {
-            tmdbCompanyRepository.save(tmdbProductionCompanyMapper.toEntityFromApi((TMDBCompanyDetailsResponse) data));
-        }
-        if (data instanceof TMDBLanguageResponse) {
-            tmdbLanguageRepository.save(tmdbSpokenLanguageMapper.toEntityFromApi((TMDBLanguageResponse) data));
-        }
+    }
 
+    public void saveEntity(Result<?> result) {
+        Object entity = result.data();
+        System.out.println("DATABASE: " + entity);
+        if (entity instanceof TMDBMovieDetailsResponse) {
+            tmdbMovieRepository.save(tmdbMovieMapper.toEntityFromApi((TMDBMovieDetailsResponse) entity));
+        }
+        if (entity instanceof TMDBGenreResponse) {
+            tmdbGenreRepository.save(tmdbGenreMapper.toEntityFromApi((TMDBGenreResponse) entity));
+        }
+        if (entity instanceof TMDBCountryResponse) {
+            tmdbCountryRepository.save(tmdbProductionCountryMapper.toEntityFromApi((TMDBCountryResponse) entity));
+        }
+        if (entity instanceof TMDBCompanyDetailsResponse) {
+            tmdbCompanyRepository.save(tmdbProductionCompanyMapper.toEntityFromApi((TMDBCompanyDetailsResponse) entity));
+        }
+        if (entity instanceof TMDBLanguageResponse) {
+            tmdbLanguageRepository.save(tmdbSpokenLanguageMapper.toEntityFromApi((TMDBLanguageResponse) entity));
+        }
     }
 }

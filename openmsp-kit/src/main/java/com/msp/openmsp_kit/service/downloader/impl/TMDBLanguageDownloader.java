@@ -2,10 +2,13 @@ package com.msp.openmsp_kit.service.downloader.impl;
 
 import aj.org.objectweb.asm.TypeReference;
 import com.msp.openmsp_kit.config.OpenMSPConfig;
+import com.msp.openmsp_kit.model.api.tmdb.TMDBCountryResponse;
 import com.msp.openmsp_kit.model.api.tmdb.TMDBLanguageResponse;
 import com.msp.openmsp_kit.service.downloader.BuildRequest;
 import com.msp.openmsp_kit.service.downloader.Downloader;
 import com.msp.openmsp_kit.service.parser.JsonParser;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.net.URI;
 import java.net.http.HttpResponse;
@@ -33,8 +36,17 @@ public class TMDBLanguageDownloader implements Downloader<List<TMDBLanguageRespo
                     .send(BuildRequest.buildRequest(buildUri(movieId), config.getTmdbApiKey()),
                             HttpResponse.BodyHandlers.ofString())
                     .body();
-            List<TMDBLanguageResponse> languages = new ArrayList<>();
-            return jsonParser.parseBody(jsonBody, languages.getClass());
+            JSONArray jsonArray = new JSONArray(jsonBody);
+            List<TMDBLanguageResponse> tmdbLanguages = new ArrayList<>();
+            for (Object object: jsonArray) {
+                TMDBLanguageResponse newResponse = new TMDBLanguageResponse(
+                        (String) ((JSONObject)object).get("iso_639_1"),
+                        (String) ((JSONObject)object).get("english_name"),
+                        (String) ((JSONObject)object).get("name")
+                );
+                tmdbLanguages.add(newResponse);
+            }
+            return tmdbLanguages;
         } catch (Exception e) {
             throw new   RuntimeException(e.getMessage());
         }

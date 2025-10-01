@@ -36,7 +36,7 @@ public record TMDBMovieDetailsResponse(
         @JsonProperty("release_date")
         String releaseDate,
         @JsonProperty("revenue")
-        int revenue,
+        long revenue,
         @JsonProperty("runtime")
         int runtime,
         @JsonProperty("status")
