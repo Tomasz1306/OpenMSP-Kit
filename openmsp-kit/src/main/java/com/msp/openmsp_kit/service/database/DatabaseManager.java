@@ -23,8 +23,6 @@ public class DatabaseManager {
     private final TMDBProductionCountryMapper tmdbProductionCountryMapper;
     private final TMDBSpokenLanguageMapper tmdbSpokenLanguageMapper;
 
-    private boolean saving = false;
-
     public DatabaseManager(TMDBMovieRepository tmdbMovieRepository,
             TMDBLanguageRepository tmdbLanguageRepository,
             TMDBCompanyRepository tmdbCompanyRepository,
@@ -48,30 +46,29 @@ public class DatabaseManager {
         this.tmdbSpokenLanguageMapper = tmdbSpokenLanguageMapper;
     }
 
-    public void saveEntity(List<Result<?>> results) {
-        saving = true;
+    public void saveEntities(List<Result<?>> results) {
         for (Result<?> result : results) {
-            Object entity = result.data();
-            if (entity instanceof TMDBMovieDetailsResponse) {
-                tmdbMovieRepository.save(tmdbMovieMapper.toEntityFromApi((TMDBMovieDetailsResponse) entity));
-            }
-            if (entity instanceof TMDBGenreResponse) {
-                tmdbGenreRepository.save(tmdbGenreMapper.toEntityFromApi((TMDBGenreResponse) entity));
-            }
-            if (entity instanceof TMDBCountryResponse) {
-                tmdbCountryRepository.save(tmdbProductionCountryMapper.toEntityFromApi((TMDBCountryResponse) entity));
-            }
-            if (entity instanceof TMDBCompanyDetailsResponse) {
-                tmdbCompanyRepository.save(tmdbProductionCompanyMapper.toEntityFromApi((TMDBCompanyDetailsResponse) entity));
-            }
-            if (entity instanceof TMDBLanguageResponse) {
-                tmdbLanguageRepository.save(tmdbSpokenLanguageMapper.toEntityFromApi((TMDBLanguageResponse) entity));
-            }
+            saveEntity(result);
         }
-        saving = false;
     }
 
-    public boolean isSaving() {
-        return saving;
+    public void saveEntity(Result<?> result) {
+        Object entity = result.data();
+        System.out.println("DATABASE: " + entity);
+        if (entity instanceof TMDBMovieDetailsResponse) {
+            tmdbMovieRepository.save(tmdbMovieMapper.toEntityFromApi((TMDBMovieDetailsResponse) entity));
+        }
+        if (entity instanceof TMDBGenreResponse) {
+            tmdbGenreRepository.save(tmdbGenreMapper.toEntityFromApi((TMDBGenreResponse) entity));
+        }
+        if (entity instanceof TMDBCountryResponse) {
+            tmdbCountryRepository.save(tmdbProductionCountryMapper.toEntityFromApi((TMDBCountryResponse) entity));
+        }
+        if (entity instanceof TMDBCompanyDetailsResponse) {
+            tmdbCompanyRepository.save(tmdbProductionCompanyMapper.toEntityFromApi((TMDBCompanyDetailsResponse) entity));
+        }
+        if (entity instanceof TMDBLanguageResponse) {
+            tmdbLanguageRepository.save(tmdbSpokenLanguageMapper.toEntityFromApi((TMDBLanguageResponse) entity));
+        }
     }
 }
