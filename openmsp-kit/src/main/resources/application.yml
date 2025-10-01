@@ -12,3 +12,4 @@ spring:
 tmdb:
   api-key: ${TMDB_API_KEY}
   source: ${SOURCE}
+  images-dest-path: ${TMDB_IMAGES_DEST_PATH}
