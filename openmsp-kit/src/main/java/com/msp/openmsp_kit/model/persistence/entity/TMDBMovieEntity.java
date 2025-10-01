@@ -3,6 +3,7 @@ package com.msp.openmsp_kit.model.persistence.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -81,6 +82,9 @@ public class TMDBMovieEntity extends AbstractEntity {
             inverseJoinColumns = @JoinColumn(name = "iso_639_1")
     )
     private Set<TMDBSpokenLanguageEntity> spokenLanguages;
+
+    @OneToMany(mappedBy = "movie")
+    private List<TMDBImageEntity> images;
 
 
     @Override
