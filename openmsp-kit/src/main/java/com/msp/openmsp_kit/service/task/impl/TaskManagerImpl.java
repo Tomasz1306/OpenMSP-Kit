@@ -26,19 +26,17 @@ public class TaskManagerImpl {
 
         tasks.addAll(getTMDBNecessaryData());
         tasks.addAll(createTMDBTasks());
-
         return tasks;
     }
 
     private List<Task> createTMDBTasks() {
         List<TMDBMovieId> movieIds = tmdbMovieDataLoader.loadData();
-
         return new ArrayList<>(movieIds.stream()
                 .map(movie -> new Task(
                         Integer.toString(movie.id()),
                         Source.TMDB,
                         Resource.MOVIE,
-                        Set.of(EndPoint.DETAILS)
+                        Set.of(EndPoint.DETAILS, EndPoint.IMAGES)
                 )).toList());
     }
 
@@ -46,9 +44,8 @@ public class TaskManagerImpl {
         return List.of(
                 new Task("", Source.TMDB, Resource.GENRES, Set.of(EndPoint.CONFIG)),
                 new Task("", Source.TMDB, Resource.COUNTRIES, Set.of(EndPoint.CONFIG)),
-                new Task("", Source.TMDB, Resource.COMPANIES, Set.of(EndPoint.DETAILS)),
+//                new Task("", Source.TMDB, Resource.COMPANIES, Set.of(EndPoint.DETAILS)),
                 new Task("", Source.TMDB, Resource.LANGUAGES, Set.of(EndPoint.CONFIG))
         );
     }
-
 }
