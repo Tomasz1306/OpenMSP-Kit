@@ -1,45 +1,29 @@
 package com.msp.openmsp_kit.service.downloader.impl;
 
 import com.msp.openmsp_kit.config.OpenMSPConfig;
-import com.msp.openmsp_kit.service.downloader.BuildRequest;
 import com.msp.openmsp_kit.service.downloader.Downloader;
 import com.msp.openmsp_kit.service.parser.JsonParser;
 import org.springframework.stereotype.Service;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpResponse;
+import java.net.URL;
 
 @Service
-public class TMDBImagesDownloader implements Downloader<byte[], String> {
-
-    private final OpenMSPConfig config;
-    private final JsonParser jsonParser;
-    private final HttpClientManager httpClientManager;
-
-    public TMDBImagesDownloader(HttpClientManager httpClientManager,
-                               JsonParser jsonParser,
-                               OpenMSPConfig config) {
-        this.httpClientManager = httpClientManager;
-        this.jsonParser = jsonParser;
-        this.config = config;
-    }
+public class TMDBImagesDownloader implements Downloader<BufferedImage, String> {
 
     @Override
-    public byte[] fetch(String imagePath) {
+    public BufferedImage fetch(String imagePath) {
         try {
-            var response = httpClientManager
-                    .getHttpClient()
-                    .send(BuildRequest.buildRequest(buildUri(imagePath)),
-                            HttpResponse.BodyHandlers.ofString())
-                    .body();
-            return response.getBytes();
-        } catch (IOException | InterruptedException e) {
+            return ImageIO.read(new URL(buildUri(imagePath).toString()));
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     private URI buildUri(String imagePath) {
-        return URI.create(String.format("https://image.tmdb.org/t/p/original/%s", imagePath));
+        return URI.create(String.format("https://image.tmdb.org/t/p/original%s", imagePath));
     }
 }

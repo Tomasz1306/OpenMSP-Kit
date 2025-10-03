@@ -1,16 +1,17 @@
 package com.msp.openmsp_kit.service.file;
 
 import com.msp.openmsp_kit.config.OpenMSPConfig;
-import com.msp.openmsp_kit.model.domain.movie.TMDBImage;
+import com.msp.openmsp_kit.model.api.tmdb.TMDBImageResponse;
 import com.msp.openmsp_kit.model.result.Result;
 import com.msp.openmsp_kit.service.downloader.impl.TMDBImagesDownloader;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 @Service
 public class FileManager {
@@ -25,16 +26,17 @@ public class FileManager {
     }
 
     public void downloadFile(Result<?> result) {
-        byte[] image = tmdbImagesDownloader.fetch(result.taskId());
-        saveFile(image, (TMDBImage) result.data());
+        BufferedImage image = tmdbImagesDownloader.fetch(result.taskId());
+        saveFile(image, (TMDBImageResponse) result.data());
     }
 
-    private void saveFile(byte[] imageData, TMDBImage imageDomain) {
+    private void saveFile(BufferedImage bufferedImage, TMDBImageResponse imageDomain) {
         try {
-            BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imageData));
+            String imageDirectoryPath = openMSPConfig.getImagesDestPath() + "/" + imageDomain.getTmdbId() + "/" + imageDomain.getIso_639_1();
+            Files.createDirectories(Paths.get(imageDirectoryPath));
             ImageIO.write(bufferedImage,
                     "png",
-                    new File(openMSPConfig.getImagesDestPath() + "/" + imageDomain.getId() + "/" + imageDomain.getIso_639_1() + "/" + imageDomain.getFile_path() + ".png"));
+                    new File(imageDirectoryPath + imageDomain.getFilePath()));
         } catch (IOException e) {
             System.out.println("An error occurred.");
             e.printStackTrace(); 
