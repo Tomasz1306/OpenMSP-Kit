@@ -36,11 +36,11 @@ public class TMDBMovieImagesDownloader implements Downloader<List<TMDBImageRespo
             TMDBMovieImagesResponse response = jsonParser.parseBody(jsonBody, TMDBMovieImagesResponse.class);
             List<TMDBImageResponse> tmdbImages = new ArrayList<>();
             tmdbImages.addAll(response.backDrops().stream().peek(image ->
-                {image.setType("backdrop"); image.setTmdbId(Integer.valueOf(movieId));}).toList());
+                {image.setType("backdrop"); image.setTmdbId(Integer.parseInt(movieId));}).toList());
             tmdbImages.addAll(response.logos().stream().peek(image ->
-                {image.setType("logo"); image.setTmdbId(Integer.valueOf(movieId));}).toList());
+                {image.setType("logo"); image.setTmdbId(Integer.parseInt(movieId));}).toList());
             tmdbImages.addAll(response.posters().stream().peek(image ->
-                {image.setType("poster"); image.setTmdbId(Integer.valueOf(movieId));}).toList());
+                {image.setType("poster"); image.setTmdbId(Integer.parseInt(movieId));}).toList());
             return tmdbImages;
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
@@ -48,7 +48,7 @@ public class TMDBMovieImagesDownloader implements Downloader<List<TMDBImageRespo
     }
 
     private URI buildUri(String movieId) {
-        return URI.create(String.format("https://api.themoviedb.org/3/movie/%s/images?include_image_language=pl", movieId));
+        return URI.create(String.format("https://api.themoviedb.org/3/movie/%s/images?language=pl", movieId));
     }
 }
 
