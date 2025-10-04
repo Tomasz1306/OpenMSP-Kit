@@ -51,7 +51,7 @@ public class DownloaderRegistry {
         );
         downloaderMap.put(
                 new DownloaderKey(Source.TMDB, Resource.MOVIE, EndPoint.IMAGES),
-                new TMDBLanguageDownloader(httpClientManager, jsonParser, config)
+                new TMDBMovieImagesDownloader(httpClientManager, jsonParser, config)
         );
     }
 

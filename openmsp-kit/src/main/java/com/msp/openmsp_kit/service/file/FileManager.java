@@ -1,40 +1,51 @@
 package com.msp.openmsp_kit.service.file;
 
 import com.msp.openmsp_kit.config.OpenMSPConfig;
-import com.msp.openmsp_kit.model.domain.movie.TMDBImage;
+import com.msp.openmsp_kit.model.api.tmdb.TMDBImageResponse;
 import com.msp.openmsp_kit.model.result.Result;
 import com.msp.openmsp_kit.service.downloader.impl.TMDBImagesDownloader;
+import com.msp.openmsp_kit.service.rateLimiter.impl.TMDBFilesRateLimiterImpl;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 @Service
 public class FileManager {
 
     private final OpenMSPConfig openMSPConfig;
     private final TMDBImagesDownloader tmdbImagesDownloader;
+    private final TMDBFilesRateLimiterImpl tmdbFilesRateLimiterImpl;
 
     public FileManager(OpenMSPConfig openMSPConfig,
-                       TMDBImagesDownloader tmdbImagesDownloader) {
+                       TMDBImagesDownloader tmdbImagesDownloader,
+                       TMDBFilesRateLimiterImpl tmdbFilesRateLimiterImpl) {
         this.openMSPConfig = openMSPConfig;
         this.tmdbImagesDownloader = tmdbImagesDownloader;
+        this.tmdbFilesRateLimiterImpl = tmdbFilesRateLimiterImpl;
     }
 
     public void downloadFile(Result<?> result) {
-        byte[] image = tmdbImagesDownloader.fetch(result.taskId());
-        saveFile(image, (TMDBImage) result.data());
+        tmdbFilesRateLimiterImpl.acquire();
+        BufferedImage image = tmdbImagesDownloader.fetch(result.taskId());
+        if (image == null) {
+            System.err.println("Buffered Image is null");
+            return;
+        }
+        saveFile(image, (TMDBImageResponse) result.data());
     }
 
-    private void saveFile(byte[] imageData, TMDBImage imageDomain) {
+    private void saveFile(BufferedImage bufferedImage, TMDBImageResponse imageDomain) {
         try {
-            BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imageData));
+            String imageDirectoryPath = openMSPConfig.getImagesDestPath() + "/" + imageDomain.getTmdbId() + "/" + imageDomain.getType() + "/" + imageDomain.getIso_639_1();
+            Files.createDirectories(Paths.get(imageDirectoryPath));
             ImageIO.write(bufferedImage,
                     "png",
-                    new File(openMSPConfig.getImagesDestPath() + "/" + imageDomain.getId() + "/" + imageDomain.getIso_639_1() + "/" + imageDomain.getFile_path() + ".png"));
+                    new File(imageDirectoryPath + imageDomain.getFilePath()));
         } catch (IOException e) {
             System.out.println("An error occurred.");
             e.printStackTrace(); 

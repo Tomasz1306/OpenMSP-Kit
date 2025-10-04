@@ -12,4 +12,12 @@ public class BuildRequest {
                 .header("Authorization", "Bearer " + authToken)
                 .build();
     }
+
+    public static HttpRequest buildRequest(URI uri) {
+        return HttpRequest
+                .newBuilder()
+                .GET()
+                .uri(uri)
+                .build();
+    }
 }

@@ -5,7 +5,8 @@ import com.msp.openmsp_kit.model.result.Result;
 import com.msp.openmsp_kit.model.task.Task;
 import com.msp.openmsp_kit.service.database.DatabaseManager;
 import com.msp.openmsp_kit.service.file.FileManager;
-import com.msp.openmsp_kit.service.rateLimiter.RateLimiter;
+import com.msp.openmsp_kit.service.metrics.MetricsCollector;
+import com.msp.openmsp_kit.service.rateLimiter.impl.RateLimiterImpl;
 import com.msp.openmsp_kit.service.task.TaskExecutor;
 import com.msp.openmsp_kit.service.threadManager.ThreadManager;
 import org.springframework.stereotype.Service;
@@ -18,9 +19,10 @@ import java.util.concurrent.*;
 public class ThreadManagerImpl implements ThreadManager {
 
     private final TaskExecutor taskExecutor;
-    private final RateLimiter rateLimiter;
+    private final RateLimiterImpl rateLimiter;
     private final DatabaseManager databaseManager;
     private final FileManager fileManager;
+    private final MetricsCollector metricsCollector;
 
     private enum Status {
         RUNNING, PAUSED, STOPPED, ERROR
@@ -30,24 +32,30 @@ public class ThreadManagerImpl implements ThreadManager {
     private final BlockingQueue<Result<?>> fileQueue;
 
     private final ExecutorService downloaderService;
-    private final ExecutorService databaseService;
-    private final ExecutorService fileService;
+
+    private final ExecutorService databaseExecutorService;
+    private final ExecutorService fileExecutorService;
+
     private final Object lock = new Object();
-    private Status status = Status.STOPPED;
+    private Status status;
 
-
-    ThreadManagerImpl(TaskExecutor taskExecutor, RateLimiter rateLimiter, DatabaseManager databaseManager, FileManager fileManager) {
+    ThreadManagerImpl(TaskExecutor taskExecutor,
+                      RateLimiterImpl rateLimiter,
+                      DatabaseManager databaseManager,
+                      FileManager fileManager,
+                      MetricsCollector metricsCollector) {
         status = Status.RUNNING;
 
         this.taskExecutor = taskExecutor;
         this.rateLimiter = rateLimiter;
+        this.metricsCollector = metricsCollector;
 
-        downloaderService = Executors.newFixedThreadPool(3);
-        databaseService = Executors.newFixedThreadPool(2);
-        fileService = Executors.newFixedThreadPool(3);
+        databaseExecutorService = Executors.newVirtualThreadPerTaskExecutor();
+        fileExecutorService = Executors.newVirtualThreadPerTaskExecutor();
+        downloaderService = Executors.newFixedThreadPool(2);
 
-        databaseQueue = new LinkedBlockingQueue<>(100);
-        fileQueue = new LinkedBlockingQueue<>(1000);
+        databaseQueue = new LinkedBlockingQueue<>(1000);
+        fileQueue = new LinkedBlockingQueue<>(5000);
         this.databaseManager = databaseManager;
         this.fileManager = fileManager;
     }
@@ -97,16 +105,15 @@ public class ThreadManagerImpl implements ThreadManager {
 
     @Override
     public void runThreads() {
-        CompletableFuture.runAsync(this::runDatabaseThread, databaseService);
-        CompletableFuture.runAsync(this::runFileThread, fileService);
-
+        CompletableFuture.runAsync(this::runDatabaseThread);
+        CompletableFuture.runAsync(this::runFileThread);
     }
 
     @Override
     public void stopThreads() {
-        databaseService.shutdown();
+        databaseExecutorService.shutdown();
+        fileExecutorService.shutdown();
         downloaderService.shutdown();
-        fileService.shutdown();
     }
 
     @Override
@@ -115,51 +122,70 @@ public class ThreadManagerImpl implements ThreadManager {
             System.out.println("ThreadManager is not running");
             return;
         }
+        int i = 0;
         for (List<Task> batch : batches) {
+            System.out.println("BATCH " + i++ + " of " + batches.size());
             processBatch(batch);
         }
     }
 
     @Override
     public void processBatch(List<Task> batch) {
+        metricsCollector.incrementTotalBatchesProcessed();
+        long startTime = System.currentTimeMillis();
         List<Result<?>> results = batch
                 .stream()
                 .map(task -> {
                     return CompletableFuture.supplyAsync(() -> {
                         rateLimiter.acquire();
-                        return taskExecutor.process(task);
-                    });
+                        var result = taskExecutor.process(task);
+                        metricsCollector.incrementProcessedTasks();
+                        return result;
+                    }, downloaderService);
                 })
                 .map(future -> {
                     try {
                         return future.get();
                     } catch (InterruptedException | ExecutionException e) {
+                        metricsCollector.incrementFailedTasks();
                         throw new RuntimeException(e);
                     }
                 })
                 .flatMap(Collection::stream)
                 .toList();
+        long endTime = System.currentTimeMillis();
+        Duration duration = Duration.ofMillis(endTime - startTime);
+
+        long seconds = duration.toSeconds();
+        long millis = duration.toMillisPart();
+
+        System.out.printf("RESULTS (size %d) processing time: %d s %d ms%n", results.size(), seconds, millis);
+
         for (Result<?> result : results) {
             try {
                 databaseQueue.put(result);
-                if (hasImageToSave(result)) {
+                metricsCollector.setdataBaseQueueSize(databaseQueue.size());
+                if (hasImageToDownload(result)) {
+                    metricsCollector.setfileQueueSize(fileQueue.size());
                     fileQueue.put(result);
                 }
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-
         }
     }
-
-
 
     @Override
     public void runDatabaseThread() {
         while (isRunning() || !databaseQueue.isEmpty()) {
             try {
-                databaseManager.saveEntity(databaseQueue.take());
+                Result<?> takenResult = databaseQueue.take();
+                databaseExecutorService.submit(() -> {
+                    databaseManager.saveEntity(takenResult);
+                    metricsCollector.incrementTotalDatabaseSaves();
+                });
             } catch (InterruptedException e) {
+                metricsCollector.incrementTotalDatabaseFailed();
                 throw new RuntimeException(e);
             }
         }
@@ -169,15 +195,20 @@ public class ThreadManagerImpl implements ThreadManager {
     public void runFileThread() {
         while (isRunning() || !fileQueue.isEmpty()) {
             try {
-                fileManager.downloadFile(fileQueue.take());
+                Result<?> takenResult = fileQueue.take();
+                fileExecutorService.submit(() -> {
+                    fileManager.downloadFile(takenResult);
+                    metricsCollector.incrementTotalFileSaves();
+                });
             } catch (InterruptedException e) {
+                metricsCollector.incrementTotalFileFailed();
                 throw new RuntimeException(e);
             }
         }
     }
 
     @Override
-    public boolean hasImageToSave(Result<?> result) {
+    public boolean hasImageToDownload(Result<?> result) {
         return result.data() instanceof TMDBImageResponse;
     }
 

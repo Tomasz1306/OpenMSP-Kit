@@ -1,5 +1,6 @@
 package com.msp.openmsp_kit.service.task.impl;
 
+import com.msp.openmsp_kit.model.api.tmdb.TMDBImageResponse;
 import com.msp.openmsp_kit.model.common.EndPoint;
 import com.msp.openmsp_kit.model.result.Result;
 import com.msp.openmsp_kit.model.task.Task;
@@ -27,9 +28,12 @@ public class TaskExecutorImpl implements TaskExecutor {
                 Object data = downloaderRegistry.getDownloader(task.source(), task.resource(), endpoint).fetch(task.id());
                 if (data instanceof List<?>) {
                     for (Object item : (List<?>) data) {
+                        if (item instanceof TMDBImageResponse) {
+                            results.add(new Result<>(((TMDBImageResponse) item).getFilePath(), true, item, ""));
+                            continue;
+                        }
                         results.add(new Result<>(task.id(), true, item, ""));
                     }
-                    continue;
                 } else {
                     results.add(new Result<>(task.id(), true, data, ""));
                 }

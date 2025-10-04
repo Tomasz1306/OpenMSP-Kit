@@ -4,6 +4,8 @@ import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.List;
+
 @Getter
 @Configuration
 public class OpenMSPConfig {
@@ -16,6 +18,8 @@ public class OpenMSPConfig {
 
     @Value("${tmdb.images-dest-path}")
     private String imagesDestPath;
+
+    private List<String> languages = List.of("pl", "en");
 
     {
         System.out.println("Configuration init");

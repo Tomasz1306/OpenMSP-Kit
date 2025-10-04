@@ -54,7 +54,6 @@ public class DatabaseManager {
 
     public void saveEntity(Result<?> result) {
         Object entity = result.data();
-        System.out.println("DATABASE: " + entity);
         if (entity instanceof TMDBMovieDetailsResponse) {
             tmdbMovieRepository.save(tmdbMovieMapper.toEntityFromApi((TMDBMovieDetailsResponse) entity));
         }

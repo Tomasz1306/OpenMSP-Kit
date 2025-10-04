@@ -22,7 +22,7 @@ public interface ThreadManager {
     void runDatabaseThread();
     void runFileThread();
 
-    boolean hasImageToSave(Result<?> result);
+    boolean hasImageToDownload(Result<?> result);
 
     void shutDown();
 }
