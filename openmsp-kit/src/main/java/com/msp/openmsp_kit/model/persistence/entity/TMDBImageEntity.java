@@ -14,6 +14,7 @@ import java.util.Objects;
 @AllArgsConstructor
 
 @Entity
+@Table(name = "tmdb_images")
 public class TMDBImageEntity extends AbstractEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
