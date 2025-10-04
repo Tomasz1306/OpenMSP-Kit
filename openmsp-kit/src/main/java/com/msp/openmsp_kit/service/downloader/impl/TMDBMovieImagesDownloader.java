@@ -27,28 +27,42 @@ public class TMDBMovieImagesDownloader implements Downloader<List<TMDBImageRespo
 
     @Override
     public List<TMDBImageResponse> fetch(String movieId) {
+        List<TMDBImageResponse> images = new ArrayList<>();
+        for (String language : config.getLanguages()) {
+            images.addAll(download(movieId, language));
+        }
+        return images;
+    }
+
+    private List<TMDBImageResponse> download(String movieId, String language) {
         try {
             var jsonBody = httpClientManager
                     .getHttpClient()
-                    .send(BuildRequest.buildRequest(buildUri(movieId), config.getTmdbApiKey()),
+                    .send(BuildRequest.buildRequest(buildUri(movieId, language), config.getTmdbApiKey()),
                             HttpResponse.BodyHandlers.ofString())
                     .body();
             TMDBMovieImagesResponse response = jsonParser.parseBody(jsonBody, TMDBMovieImagesResponse.class);
             List<TMDBImageResponse> tmdbImages = new ArrayList<>();
-            tmdbImages.addAll(response.backDrops().stream().peek(image ->
+            if (response.backDrops() != null) {
+                tmdbImages.addAll(response.backDrops().subList(0, Math.min(response.backDrops().size(), 20)).stream().peek(image ->
                 {image.setType("backdrop"); image.setTmdbId(Integer.parseInt(movieId));}).toList());
-            tmdbImages.addAll(response.logos().stream().peek(image ->
+            }
+            if (response.logos() != null) {
+                tmdbImages.addAll(response.logos().subList(0, Math.min(response.logos().size(), 5)).stream().peek(image ->
                 {image.setType("logo"); image.setTmdbId(Integer.parseInt(movieId));}).toList());
-            tmdbImages.addAll(response.posters().stream().peek(image ->
+            }
+            if (response.posters() != null) {
+                tmdbImages.addAll(response.posters().subList(0, Math.min(response.posters().size(), 5)).stream().peek(image ->
                 {image.setType("poster"); image.setTmdbId(Integer.parseInt(movieId));}).toList());
+            }
             return tmdbImages;
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
     }
 
-    private URI buildUri(String movieId) {
-        return URI.create(String.format("https://api.themoviedb.org/3/movie/%s/images?language=pl", movieId));
+    private URI buildUri(String movieId, String language) {
+        return URI.create(String.format("https://api.themoviedb.org/3/movie/%s/images?language=%s", movieId, language));
     }
 }
 
