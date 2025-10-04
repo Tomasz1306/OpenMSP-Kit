@@ -1,8 +1,8 @@
-package com.msp.openmsp_kit.model.task;
+package com.msp.openmsp_kit.model.domain.task;
 
-import com.msp.openmsp_kit.model.common.EndPoint;
-import com.msp.openmsp_kit.model.common.Resource;
-import com.msp.openmsp_kit.model.common.Source;
+import com.msp.openmsp_kit.model.domain.common.EndPoint;
+import com.msp.openmsp_kit.model.domain.common.Resource;
+import com.msp.openmsp_kit.model.domain.common.Source;
 
 import java.util.Set;
 

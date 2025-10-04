@@ -2,12 +2,11 @@ package com.msp.openmsp_kit.service.database;
 
 import com.msp.openmsp_kit.model.api.tmdb.*;
 import com.msp.openmsp_kit.model.mapper.*;
-import com.msp.openmsp_kit.model.result.Result;
+import com.msp.openmsp_kit.model.domain.result.Result;
 import com.msp.openmsp_kit.repository.movie.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class DatabaseManager {

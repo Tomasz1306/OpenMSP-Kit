@@ -2,7 +2,6 @@ package com.msp.openmsp_kit.service.downloader.impl;
 
 import com.msp.openmsp_kit.config.OpenMSPConfig;
 import com.msp.openmsp_kit.model.api.tmdb.TMDBCountryResponse;
-import com.msp.openmsp_kit.model.result.Result;
 import com.msp.openmsp_kit.service.downloader.BuildRequest;
 import com.msp.openmsp_kit.service.downloader.Downloader;
 import com.msp.openmsp_kit.service.parser.JsonParser;

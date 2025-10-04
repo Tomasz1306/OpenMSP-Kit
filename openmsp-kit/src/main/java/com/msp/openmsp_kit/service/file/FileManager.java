@@ -2,7 +2,7 @@ package com.msp.openmsp_kit.service.file;
 
 import com.msp.openmsp_kit.config.OpenMSPConfig;
 import com.msp.openmsp_kit.model.api.tmdb.TMDBImageResponse;
-import com.msp.openmsp_kit.model.result.Result;
+import com.msp.openmsp_kit.model.domain.result.Result;
 import com.msp.openmsp_kit.service.downloader.impl.TMDBImagesDownloader;
 import com.msp.openmsp_kit.service.rateLimiter.impl.TMDBFilesRateLimiterImpl;
 import org.springframework.stereotype.Service;

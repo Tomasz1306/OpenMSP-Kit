@@ -1,7 +1,7 @@
 package com.msp.openmsp_kit.service.task;
 
-import com.msp.openmsp_kit.model.result.Result;
-import com.msp.openmsp_kit.model.task.Task;
+import com.msp.openmsp_kit.model.domain.result.Result;
+import com.msp.openmsp_kit.model.domain.task.Task;
 
 import java.util.List;
 

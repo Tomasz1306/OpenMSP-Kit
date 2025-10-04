@@ -1,10 +1,10 @@
 package com.msp.openmsp_kit.service.task.impl;
 
 import com.msp.openmsp_kit.model.api.tmdb.TMDBMovieId;
-import com.msp.openmsp_kit.model.common.EndPoint;
-import com.msp.openmsp_kit.model.common.Resource;
-import com.msp.openmsp_kit.model.common.Source;
-import com.msp.openmsp_kit.model.task.Task;
+import com.msp.openmsp_kit.model.domain.common.EndPoint;
+import com.msp.openmsp_kit.model.domain.common.Resource;
+import com.msp.openmsp_kit.model.domain.common.Source;
+import com.msp.openmsp_kit.model.domain.task.Task;
 import com.msp.openmsp_kit.service.dataLoader.impl.TMDBMovieDataLoader;
 import org.springframework.stereotype.Service;
 

@@ -1,8 +1,8 @@
 package com.msp.openmsp_kit.service.downloader;
 
-import com.msp.openmsp_kit.model.common.EndPoint;
-import com.msp.openmsp_kit.model.common.Resource;
-import com.msp.openmsp_kit.model.common.Source;
+import com.msp.openmsp_kit.model.domain.common.EndPoint;
+import com.msp.openmsp_kit.model.domain.common.Resource;
+import com.msp.openmsp_kit.model.domain.common.Source;
 
 import java.util.Objects;
 

@@ -1,4 +1,4 @@
-package com.msp.openmsp_kit.model.result;
+package com.msp.openmsp_kit.model.domain.result;
 
 public record Result<T> (
         String taskId,

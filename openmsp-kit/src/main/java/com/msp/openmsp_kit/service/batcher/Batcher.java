@@ -1,6 +1,6 @@
 package com.msp.openmsp_kit.service.batcher;
 
-import com.msp.openmsp_kit.model.task.Task;
+import com.msp.openmsp_kit.model.domain.task.Task;
 
 import java.util.List;
 

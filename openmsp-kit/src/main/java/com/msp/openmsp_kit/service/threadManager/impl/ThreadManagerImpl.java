@@ -1,8 +1,8 @@
 package com.msp.openmsp_kit.service.threadManager.impl;
 
 import com.msp.openmsp_kit.model.api.tmdb.TMDBImageResponse;
-import com.msp.openmsp_kit.model.result.Result;
-import com.msp.openmsp_kit.model.task.Task;
+import com.msp.openmsp_kit.model.domain.result.Result;
+import com.msp.openmsp_kit.model.domain.task.Task;
 import com.msp.openmsp_kit.service.database.DatabaseManager;
 import com.msp.openmsp_kit.service.file.FileManager;
 import com.msp.openmsp_kit.service.metrics.MetricsCollector;
