@@ -1,5 +1,6 @@
 package com.msp.openmsp_kit.service.metrics;
 
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -16,6 +17,9 @@ public class MetricsCollector {
     private final AtomicInteger totalFileSaves = new AtomicInteger(0);
     private final AtomicInteger totalDatabaseFailed = new AtomicInteger(0);
     private final AtomicInteger totalFileFailed = new AtomicInteger(0);
+
+    private final AtomicInteger databaseQueueSize = new AtomicInteger(0);
+    private final AtomicInteger fileQueueSize = new AtomicInteger(0);
 
     public void incrementProcessedTasks() {
         this.processedTasks.incrementAndGet();
@@ -39,13 +43,27 @@ public class MetricsCollector {
         this.totalFileFailed.incrementAndGet();
     }
 
-    public void printMetrics() {
-        System.out.println("Total batches processed: " + this.totalBatchesProcessed.get());
-        System.out.println("Total processed tasks: " + this.processedTasks.get());
-        System.out.println("Total failed tasks: " + this.failedTasks.get());
-        System.out.println("Total database saves: " + this.totalDatabaseSaves.get());
-        System.out.println("Total file saves: " + this.totalFileSaves.get());
-        System.out.println("Total database failed: " + this.totalDatabaseFailed.get());
-        System.out.println("Total file failed: " + this.totalFileFailed.get());
+    public void setdataBaseQueueSize(int size) {
+        this.databaseQueueSize.set(size);
     }
+    public void setfileQueueSize(int size) {
+        this.fileQueueSize.set(size);
+    }
+
+    @Scheduled(fixedRate = 5000)
+    public void printMetrics() {
+        System.out.printf(
+                "Batches: %d | Tasks: %d | Failed: %d | DB Saves: %d | File Saves: %d | DB Failed: %d | File Failed: %d | DB queue size: %d | FILE queue size: %d%n",
+                totalBatchesProcessed.get(),
+                processedTasks.get(),
+                failedTasks.get(),
+                totalDatabaseSaves.get(),
+                totalFileSaves.get(),
+                totalDatabaseFailed.get(),
+                totalFileFailed.get(),
+                databaseQueueSize.get(),
+                fileQueueSize.get()
+        );
+    }
+
 }
