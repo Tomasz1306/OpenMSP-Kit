@@ -19,6 +19,7 @@ public class TMDBMovieImpl implements Movie, MovieWithRatings {
     private Integer tmdbId;
     private String imdbId;
 
+    private String iso_639_1;
     private String title;
     private String originalTitle;
     private String releaseDate;

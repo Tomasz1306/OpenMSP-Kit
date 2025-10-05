@@ -12,5 +12,6 @@ import lombok.NoArgsConstructor;
 
 public class TMDBGenre {
     private int id;
+    private String iso_639_1;
     private String name;
 }
