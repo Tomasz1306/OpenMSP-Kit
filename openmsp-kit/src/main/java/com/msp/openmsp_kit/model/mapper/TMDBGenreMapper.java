@@ -6,13 +6,14 @@ import com.msp.openmsp_kit.model.persistence.entity.TMDBGenreEntity;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TMDBGenreMapper implements ToEntityFromDomainMapper<TMDBGenreEntity, TMDBGenre>, ToEntityFromApiMapper<TMDBGenreEntity, TMDBGenreResponse> {
+public class TMDBGenreMapper implements ToEntityFromDomainMapper<TMDBGenreEntity, TMDBGenre>,
+        ToEntityFromApiMapper<TMDBGenreEntity, TMDBGenreResponse>, ToDomainFromApiMapper<TMDBGenre, TMDBGenreResponse> {
 
     @Override
     public TMDBGenreEntity toEntityFromApi(TMDBGenreResponse response) {
         return TMDBGenreEntity
                 .builder()
-                .id(Long.valueOf(response.id()))
+                .tmdbId(Long.valueOf(response.id()))
                 .name(response.name())
                 .build();
     }
@@ -21,8 +22,18 @@ public class TMDBGenreMapper implements ToEntityFromDomainMapper<TMDBGenreEntity
     public TMDBGenreEntity toEntityFromDomain(TMDBGenre domain) {
         return TMDBGenreEntity
                 .builder()
-                .id(Long.valueOf(domain.getId()))
+                .tmdbId(Long.valueOf(domain.getId()))
+                .iso_639_1(domain.getIso_639_1())
                 .name(domain.getName())
+                .build();
+    }
+
+    @Override
+    public TMDBGenre toDomainFromApi(TMDBGenreResponse response) {
+        return TMDBGenre
+                .builder()
+                .id(response.id())
+                .name(response.name())
                 .build();
     }
 }
