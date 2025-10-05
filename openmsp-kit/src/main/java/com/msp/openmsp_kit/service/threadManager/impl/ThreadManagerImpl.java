@@ -182,7 +182,6 @@ public class ThreadManagerImpl implements ThreadManager {
                 Result<?> takenResult = databaseQueue.take();
                 databaseExecutorService.submit(() -> {
                     databaseManager.saveEntity(takenResult);
-                    metricsCollector.incrementTotalDatabaseSaves();
                 });
             } catch (InterruptedException e) {
                 metricsCollector.incrementTotalDatabaseFailed();
@@ -198,7 +197,6 @@ public class ThreadManagerImpl implements ThreadManager {
                 Result<?> takenResult = fileQueue.take();
                 fileExecutorService.submit(() -> {
                     fileManager.downloadFile(takenResult);
-                    metricsCollector.incrementTotalFileSaves();
                 });
             } catch (InterruptedException e) {
                 metricsCollector.incrementTotalFileFailed();
