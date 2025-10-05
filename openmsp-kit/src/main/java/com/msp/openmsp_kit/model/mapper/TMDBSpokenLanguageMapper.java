@@ -7,13 +7,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class TMDBSpokenLanguageMapper implements ToEntityFromApiMapper<TMDBSpokenLanguageEntity, TMDBLanguageResponse>,
-    ToEntityFromDomainMapper<TMDBSpokenLanguageEntity, TMDBSpokenLanguage> {
+    ToEntityFromDomainMapper<TMDBSpokenLanguageEntity, TMDBSpokenLanguage>, ToDomainFromApiMapper<TMDBSpokenLanguage, TMDBLanguageResponse> {
 
     @Override
     public TMDBSpokenLanguageEntity toEntityFromApi(TMDBLanguageResponse response) {
         return TMDBSpokenLanguageEntity
                 .builder()
-                .iso_639_1(response.iso_639_1())
+                .iso6391(response.iso_639_1())
                 .name(response.name())
                 .englishName(response.englishName())
                 .build();
@@ -23,9 +23,19 @@ public class TMDBSpokenLanguageMapper implements ToEntityFromApiMapper<TMDBSpoke
     public TMDBSpokenLanguageEntity toEntityFromDomain(TMDBSpokenLanguage domain) {
         return TMDBSpokenLanguageEntity
                 .builder()
-                .iso_639_1(domain.getIso_639_1())
+                .iso6391(domain.getIso_639_1())
                 .name(domain.getName())
                 .englishName(domain.getEnglishName())
+                .build();
+    }
+
+    @Override
+    public TMDBSpokenLanguage toDomainFromApi(TMDBLanguageResponse response) {
+        return TMDBSpokenLanguage
+                .builder()
+                .iso_639_1(response.iso_639_1())
+                .name(response.name())
+                .englishName(response.englishName())
                 .build();
     }
 }
