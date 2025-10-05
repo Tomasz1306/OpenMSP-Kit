@@ -19,7 +19,7 @@ public class TMDBSpokenLanguageEntity extends AbstractEntity {
 
     @Id
     @Column(name = "iso_639_1")
-    private String iso_639_1;
+    private String iso6391;
 
     @Column(name = "english_name")
     private String englishName;
