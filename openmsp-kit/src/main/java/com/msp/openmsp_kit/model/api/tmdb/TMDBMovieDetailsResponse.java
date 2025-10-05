@@ -56,8 +56,8 @@ public record TMDBMovieDetailsResponse(
         @JsonProperty("production_companies")
         List<TMDBProductionCompany> productionCompanies,
         @JsonProperty("production_countries")
-        List<TMDBProductionCountry> productionCountries,
+        List<TMDBCountryResponse> productionCountries,
         @JsonProperty("spoken_languages")
-        List<TMDBSpokenLanguage> spokenLanguages
+        List<TMDBLanguageResponse> spokenLanguages
 ) {
 }

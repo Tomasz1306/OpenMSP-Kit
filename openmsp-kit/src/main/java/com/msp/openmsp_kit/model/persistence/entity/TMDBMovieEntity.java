@@ -17,9 +17,14 @@ import java.util.Set;
 public class TMDBMovieEntity extends AbstractEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
+
+    @Column(name = "iso_639_1")
+    private String iso_639_1;
     @Column(name = "tmdb_id")
     private Integer tmdbId;
-
     @Column(name = "imdb_id")
     private String imdbId;
     @Column(name = "title")
@@ -30,7 +35,7 @@ public class TMDBMovieEntity extends AbstractEntity {
     private String releaseDate;
     @Column(name = "homepage")
     private String homepage;
-    @Column(name = "ovierview", length = 1000)
+    @Column(name = "overview", length = 1000)
     private String overview;
     @Column(name = "language")
     private String language;
@@ -54,15 +59,15 @@ public class TMDBMovieEntity extends AbstractEntity {
     @ManyToMany
     @JoinTable(
             name = "MovieProductionCompanies",
-            joinColumns = @JoinColumn(name = "movie_id"),
+            joinColumns = @JoinColumn(name = "id"),
             inverseJoinColumns = @JoinColumn(name = "product_company_id")
     )
-    private Set<TMDBProductionCompanyEntity> productionCompanies;
+    private Set<TMDBProductionCompanyEntity> productionCompanies = null;
 
     @ManyToMany
     @JoinTable(
             name = "MovieGenre",
-            joinColumns = @JoinColumn(name = "movie_id"),
+            joinColumns = @JoinColumn(name = "tmdb_movie_id"),
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
     private Set<TMDBGenreEntity> genres;
@@ -70,7 +75,7 @@ public class TMDBMovieEntity extends AbstractEntity {
     @ManyToMany
     @JoinTable(
             name = "MovieProductionCountry",
-            joinColumns = @JoinColumn(name ="movie_id"),
+            joinColumns = @JoinColumn(name ="id"),
             inverseJoinColumns = @JoinColumn(name = "iso_3166_1")
     )
     private Set<TMDBProductionCountryEntity> productionCountries;
@@ -78,7 +83,7 @@ public class TMDBMovieEntity extends AbstractEntity {
     @ManyToMany
     @JoinTable(
             name = "MovieSpokenLanguages",
-            joinColumns = @JoinColumn(name ="movie_id"),
+            joinColumns = @JoinColumn(name ="id"),
             inverseJoinColumns = @JoinColumn(name = "iso_639_1")
     )
     private Set<TMDBSpokenLanguageEntity> spokenLanguages;
@@ -89,7 +94,7 @@ public class TMDBMovieEntity extends AbstractEntity {
 
     @Override
     public int hashCode() {
-        return Objects.hash(tmdbId);
+        return Objects.hash(id);
     }
 
 }

@@ -1,10 +1,9 @@
 package com.msp.openmsp_kit.service.threadManager;
 
-import com.msp.openmsp_kit.model.result.Result;
-import com.msp.openmsp_kit.model.task.Task;
+import com.msp.openmsp_kit.model.domain.result.Result;
+import com.msp.openmsp_kit.model.domain.task.Task;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 public interface ThreadManager {
     boolean isRunning();

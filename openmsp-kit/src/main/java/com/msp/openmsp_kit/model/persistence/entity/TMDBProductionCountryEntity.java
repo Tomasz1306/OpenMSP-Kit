@@ -19,7 +19,7 @@ public class TMDBProductionCountryEntity extends AbstractEntity {
 
     @Id
     @Column(name ="iso_3166_1")
-    private String iso_3166_1;
+    private String iso31661;
 
     @Column(name = "english_name")
     private String englishName;

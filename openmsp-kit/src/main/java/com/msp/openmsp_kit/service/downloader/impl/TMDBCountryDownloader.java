@@ -2,7 +2,8 @@ package com.msp.openmsp_kit.service.downloader.impl;
 
 import com.msp.openmsp_kit.config.OpenMSPConfig;
 import com.msp.openmsp_kit.model.api.tmdb.TMDBCountryResponse;
-import com.msp.openmsp_kit.model.result.Result;
+import com.msp.openmsp_kit.model.domain.movie.TMDBProductionCountry;
+import com.msp.openmsp_kit.model.mapper.TMDBProductionCountryMapper;
 import com.msp.openmsp_kit.service.downloader.BuildRequest;
 import com.msp.openmsp_kit.service.downloader.Downloader;
 import com.msp.openmsp_kit.service.parser.JsonParser;
@@ -13,21 +14,24 @@ import java.net.URI;
 import java.net.http.HttpResponse;
 import java.util.*;
 
-public class TMDBCountryDownloader implements Downloader<List<TMDBCountryResponse>, String> {
+public class TMDBCountryDownloader implements Downloader<List<TMDBProductionCountry>, String> {
     private final OpenMSPConfig config;
-    private final JsonParser jsonParser;
     private final HttpClientManager httpClientManager;
+    private final JsonParser jsonParser;
+    private final TMDBProductionCountryMapper productionCountryMapper;
 
     public TMDBCountryDownloader(HttpClientManager httpClientManager,
+                               TMDBProductionCountryMapper productionCountryMapper,
                                JsonParser jsonParser,
                                OpenMSPConfig config) {
         this.httpClientManager = httpClientManager;
+        this.productionCountryMapper = productionCountryMapper;
         this.jsonParser = jsonParser;
         this.config = config;
     }
 
     @Override
-    public List<TMDBCountryResponse> fetch(String movieId) {
+    public List<TMDBProductionCountry> fetch(String movieId) {
         try {
             var jsonBody = httpClientManager
                     .getHttpClient()
@@ -45,7 +49,7 @@ public class TMDBCountryDownloader implements Downloader<List<TMDBCountryRespons
                 );
                 tmdbCountries.add(newResponse);
             }
-            return tmdbCountries;
+            return tmdbCountries.stream().map(productionCountryMapper::toDomainFromApi).toList();
         } catch (Exception e) {
             throw new  RuntimeException(e.getMessage());
         }

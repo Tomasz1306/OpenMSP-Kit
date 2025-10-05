@@ -1,13 +1,11 @@
 package com.msp.openmsp_kit.service.scheduler;
 
-import com.msp.openmsp_kit.model.result.Result;
-import com.msp.openmsp_kit.model.task.Task;
+import com.msp.openmsp_kit.model.domain.task.Task;
 import com.msp.openmsp_kit.service.batcher.Batcher;
 import com.msp.openmsp_kit.service.task.impl.TaskManagerImpl;
 import com.msp.openmsp_kit.service.threadManager.impl.ThreadManagerImpl;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service

@@ -14,11 +14,18 @@ import java.util.Set;
 @AllArgsConstructor
 
 @Entity
-@Table(name = "genres")
+@Table(name = "tmdb_genres")
 public class TMDBGenreEntity extends AbstractEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
+
+    @Column(name = "tmdb_id")
+    private Long tmdbId;
+
+    @Column(name = "iso_639_1")
+    private String iso_639_1;
 
     @Column(name = "name")
     private String name;

@@ -12,5 +12,6 @@ import lombok.NoArgsConstructor;
 
 public class TMDBProductionCountry {
     private String iso_3166_1;
-    private String name;
+    private String englishName;
+    private String nativeName;
 }

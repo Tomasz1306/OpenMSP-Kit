@@ -2,8 +2,9 @@ package com.msp.openmsp_kit.service.file;
 
 import com.msp.openmsp_kit.config.OpenMSPConfig;
 import com.msp.openmsp_kit.model.api.tmdb.TMDBImageResponse;
-import com.msp.openmsp_kit.model.result.Result;
+import com.msp.openmsp_kit.model.domain.result.Result;
 import com.msp.openmsp_kit.service.downloader.impl.TMDBImagesDownloader;
+import com.msp.openmsp_kit.service.metrics.MetricsCollector;
 import com.msp.openmsp_kit.service.rateLimiter.impl.TMDBFilesRateLimiterImpl;
 import org.springframework.stereotype.Service;
 
@@ -20,13 +21,16 @@ public class FileManager {
     private final OpenMSPConfig openMSPConfig;
     private final TMDBImagesDownloader tmdbImagesDownloader;
     private final TMDBFilesRateLimiterImpl tmdbFilesRateLimiterImpl;
+    private final MetricsCollector metricsCollector;
 
     public FileManager(OpenMSPConfig openMSPConfig,
                        TMDBImagesDownloader tmdbImagesDownloader,
-                       TMDBFilesRateLimiterImpl tmdbFilesRateLimiterImpl) {
+                       TMDBFilesRateLimiterImpl tmdbFilesRateLimiterImpl,
+                       MetricsCollector metricsCollector) {
         this.openMSPConfig = openMSPConfig;
         this.tmdbImagesDownloader = tmdbImagesDownloader;
         this.tmdbFilesRateLimiterImpl = tmdbFilesRateLimiterImpl;
+        this.metricsCollector = metricsCollector;
     }
 
     public void downloadFile(Result<?> result) {
@@ -37,6 +41,7 @@ public class FileManager {
             return;
         }
         saveFile(image, (TMDBImageResponse) result.data());
+        metricsCollector.incrementTotalFileSaves();
     }
 
     private void saveFile(BufferedImage bufferedImage, TMDBImageResponse imageDomain) {

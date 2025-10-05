@@ -1,8 +1,8 @@
 package com.msp.openmsp_kit.service.threadManager.impl;
 
 import com.msp.openmsp_kit.model.api.tmdb.TMDBImageResponse;
-import com.msp.openmsp_kit.model.result.Result;
-import com.msp.openmsp_kit.model.task.Task;
+import com.msp.openmsp_kit.model.domain.result.Result;
+import com.msp.openmsp_kit.model.domain.task.Task;
 import com.msp.openmsp_kit.service.database.DatabaseManager;
 import com.msp.openmsp_kit.service.file.FileManager;
 import com.msp.openmsp_kit.service.metrics.MetricsCollector;
@@ -182,7 +182,6 @@ public class ThreadManagerImpl implements ThreadManager {
                 Result<?> takenResult = databaseQueue.take();
                 databaseExecutorService.submit(() -> {
                     databaseManager.saveEntity(takenResult);
-                    metricsCollector.incrementTotalDatabaseSaves();
                 });
             } catch (InterruptedException e) {
                 metricsCollector.incrementTotalDatabaseFailed();
@@ -198,7 +197,6 @@ public class ThreadManagerImpl implements ThreadManager {
                 Result<?> takenResult = fileQueue.take();
                 fileExecutorService.submit(() -> {
                     fileManager.downloadFile(takenResult);
-                    metricsCollector.incrementTotalFileSaves();
                 });
             } catch (InterruptedException e) {
                 metricsCollector.incrementTotalFileFailed();
