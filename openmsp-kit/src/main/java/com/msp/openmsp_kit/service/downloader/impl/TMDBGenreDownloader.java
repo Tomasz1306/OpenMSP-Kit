@@ -50,7 +50,7 @@ public class TMDBGenreDownloader implements Downloader<List<TMDBGenre>, String> 
             return response
                     .genres()
                     .stream()
-                    .map(genre -> new TMDBGenreResponse(genre.id(), genre.name())).toList();
+                    .map(genre -> new TMDBGenreResponse(genre.tmdbId(), genre.name())).toList();
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
