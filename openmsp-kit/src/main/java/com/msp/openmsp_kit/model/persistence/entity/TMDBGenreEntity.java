@@ -1,10 +1,8 @@
 package com.msp.openmsp_kit.model.persistence.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Set;
 
@@ -12,6 +10,7 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+
 
 @Entity
 @Table(name = "tmdb_genres")
@@ -30,6 +29,17 @@ public class TMDBGenreEntity extends AbstractEntity {
     @Column(name = "name")
     private String name;
 
-    @ManyToMany(mappedBy = "genres")
+    @ManyToMany(mappedBy = "genres",  fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<TMDBMovieEntity> tmdbMovies;
+
+    @Override
+    public String toString() {
+        return "{" +
+                "id=" + id +
+                ",tmdbId='" + tmdbId + '\'' +
+                ",iso_639_1'" + iso_639_1 +
+                ",name='" + name + '\'' +
+                '}';
+    }
 }

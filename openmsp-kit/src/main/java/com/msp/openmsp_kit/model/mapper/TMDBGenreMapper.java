@@ -13,7 +13,7 @@ public class TMDBGenreMapper implements ToEntityFromDomainMapper<TMDBGenreEntity
     public TMDBGenreEntity toEntityFromApi(TMDBGenreResponse response) {
         return TMDBGenreEntity
                 .builder()
-                .tmdbId(Long.valueOf(response.id()))
+                .tmdbId(Long.valueOf(response.tmdbId()))
                 .name(response.name())
                 .build();
     }
@@ -32,7 +32,7 @@ public class TMDBGenreMapper implements ToEntityFromDomainMapper<TMDBGenreEntity
     public TMDBGenre toDomainFromApi(TMDBGenreResponse response) {
         return TMDBGenre
                 .builder()
-                .id(response.id())
+                .tmdbId(response.tmdbId())
                 .name(response.name())
                 .build();
     }

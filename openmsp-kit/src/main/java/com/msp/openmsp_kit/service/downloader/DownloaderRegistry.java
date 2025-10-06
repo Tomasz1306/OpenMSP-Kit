@@ -4,10 +4,7 @@ import com.msp.openmsp_kit.config.OpenMSPConfig;
 import com.msp.openmsp_kit.model.domain.common.EndPoint;
 import com.msp.openmsp_kit.model.domain.common.Resource;
 import com.msp.openmsp_kit.model.domain.common.Source;
-import com.msp.openmsp_kit.model.mapper.TMDBGenreMapper;
-import com.msp.openmsp_kit.model.mapper.TMDBMovieMapper;
-import com.msp.openmsp_kit.model.mapper.TMDBProductionCountryMapper;
-import com.msp.openmsp_kit.model.mapper.TMDBSpokenLanguageMapper;
+import com.msp.openmsp_kit.model.mapper.*;
 import com.msp.openmsp_kit.service.downloader.impl.*;
 import com.msp.openmsp_kit.service.parser.JsonParser;
 import org.springframework.stereotype.Service;
@@ -26,6 +23,7 @@ public class DownloaderRegistry {
     private final TMDBGenreMapper tmdbGenreMapper;
     private final TMDBSpokenLanguageMapper tmdbSpokenLanguageMapper;
     private final TMDBProductionCountryMapper tmdbProductionCountryMapper;
+    private final TMDBWatchProviderMapper tmdbWatchProviderMapper;
 
     Map<DownloaderKey, Downloader> downloaderMap = new HashMap<>();
 
@@ -35,7 +33,8 @@ public class DownloaderRegistry {
                        TMDBMovieMapper tmdbMovieMapper,
                        TMDBGenreMapper tmdbGenreMapper,
                        TMDBSpokenLanguageMapper tmdbSpokenLanguageMapper,
-                       TMDBProductionCountryMapper tmdbProductionCountryMapper) {
+                       TMDBProductionCountryMapper tmdbProductionCountryMapper,
+                       TMDBWatchProviderMapper tmdbWatchProviderMapper) {
         this.config = config;
         this.jsonParser = jsonParser;
         this.httpClientManager = httpClientManager;
@@ -43,6 +42,7 @@ public class DownloaderRegistry {
         this.tmdbGenreMapper = tmdbGenreMapper;
         this.tmdbSpokenLanguageMapper = tmdbSpokenLanguageMapper;
         this.tmdbProductionCountryMapper = tmdbProductionCountryMapper;
+        this.tmdbWatchProviderMapper = tmdbWatchProviderMapper;
 
         initDownloaders();
     }
@@ -69,8 +69,16 @@ public class DownloaderRegistry {
                 new TMDBLanguageDownloader(httpClientManager, tmdbSpokenLanguageMapper, jsonParser, config)
         );
         downloaderMap.put(
+                new DownloaderKey(Source.TMDB, Resource.WATCH_PROVIDERS, EndPoint.CONFIG),
+                new TMDBMovieWatchProviderListDownloader(httpClientManager, tmdbWatchProviderMapper, jsonParser, config)
+        );
+        downloaderMap.put(
                 new DownloaderKey(Source.TMDB, Resource.MOVIE, EndPoint.IMAGES),
                 new TMDBMovieImagesDownloader(httpClientManager, jsonParser, config)
+        );
+        downloaderMap.put(
+                new DownloaderKey(Source.TMDB, Resource.MOVIE, EndPoint.WATCH_PROVIDERS),
+                new TMDBMovieWatchProvidersDownloader(httpClientManager, jsonParser, config)
         );
     }
 

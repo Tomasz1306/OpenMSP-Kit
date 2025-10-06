@@ -1,5 +1,7 @@
 package com.msp.openmsp_kit.model.persistence.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,6 +16,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "tmdb_movies")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TMDBMovieEntity extends AbstractEntity {
 
     @Id
@@ -22,7 +25,7 @@ public class TMDBMovieEntity extends AbstractEntity {
     private Long id;
 
     @Column(name = "iso_639_1")
-    private String iso_639_1;
+    private String iso6391;
     @Column(name = "tmdb_id")
     private Integer tmdbId;
     @Column(name = "imdb_id")
@@ -62,14 +65,16 @@ public class TMDBMovieEntity extends AbstractEntity {
             joinColumns = @JoinColumn(name = "id"),
             inverseJoinColumns = @JoinColumn(name = "product_company_id")
     )
+    @JsonIgnore
     private Set<TMDBProductionCompanyEntity> productionCompanies = null;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "MovieGenre",
             joinColumns = @JoinColumn(name = "tmdb_movie_id"),
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
+    @JsonIgnore
     private Set<TMDBGenreEntity> genres;
 
     @ManyToMany
@@ -78,6 +83,7 @@ public class TMDBMovieEntity extends AbstractEntity {
             joinColumns = @JoinColumn(name ="id"),
             inverseJoinColumns = @JoinColumn(name = "iso_3166_1")
     )
+    @JsonIgnore
     private Set<TMDBProductionCountryEntity> productionCountries;
 
     @ManyToMany
@@ -86,7 +92,11 @@ public class TMDBMovieEntity extends AbstractEntity {
             joinColumns = @JoinColumn(name ="id"),
             inverseJoinColumns = @JoinColumn(name = "iso_639_1")
     )
+    @JsonIgnore
     private Set<TMDBSpokenLanguageEntity> spokenLanguages;
+
+    @OneToMany(mappedBy = "tmdbMovie")
+    private Set<TMDBMovieProviderEntity> movieProviders;
 
     @OneToMany(mappedBy = "movie")
     private List<TMDBImageEntity> images;
@@ -97,4 +107,19 @@ public class TMDBMovieEntity extends AbstractEntity {
         return Objects.hash(id);
     }
 
+
+    @Override
+    public String toString() {
+        return "{" +
+                "id=" + id +
+                ", tmdbId=" + tmdbId +
+                ", title='" + title + '\'' +
+                ", originalTitle='" + originalTitle + '\'' +
+                ", releaseDate='" + releaseDate + '\'' +
+                ", homepage='" + homepage + '\'' +
+                ", overview='" + overview + '\'' +
+                ", language='" + language + '\'' +
+                ", posterPath='" + posterPath + '\'' +
+                '}';
+    }
 }

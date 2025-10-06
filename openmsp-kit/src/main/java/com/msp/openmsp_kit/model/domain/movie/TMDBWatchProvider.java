@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class TMDBGenre {
-    private int id;
-    private int tmdbId;
-    private String iso_639_1;
-    private String name;
+public class TMDBWatchProvider {
+    private Long providerId;
+    private String providerName;
+    private String logoPath;
+    private Long displayPriority;
 }

@@ -7,6 +7,7 @@ import com.msp.openmsp_kit.model.domain.result.Result;
 import com.msp.openmsp_kit.model.persistence.entity.*;
 import com.msp.openmsp_kit.repository.movie.*;
 import com.msp.openmsp_kit.service.metrics.MetricsCollector;
+import jakarta.ws.rs.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,15 +23,20 @@ public class DatabaseManager {
     private final TMDBCountryRepository tmdbCountryRepository;
     private final TMDBGenreRepository tmdbGenreRepository;
     private final TMDBImageRepository tmdbImageRepository;
+    private final TMDBWatchProviderRepository tmdbWatchProviderRepository;
+
     private final TMDBMovieMapper tmdbMovieMapper;
     private final TMDBGenreMapper tmdbGenreMapper;
     private final TMDBImageMapper tmdbImageMapper;
     private final TMDBProductionCompanyMapper tmdbProductionCompanyMapper;
     private final TMDBProductionCountryMapper tmdbProductionCountryMapper;
     private final TMDBSpokenLanguageMapper tmdbSpokenLanguageMapper;
+    private final TMDBWatchProviderMapper tmdbWatchProviderMapper;
+
     private final MetricsCollector metricsCollector;
 
     private final Semaphore semaphore;
+    private final TMDBMovieWatchProviderRepository tMDBMovieWatchProviderRepository;
 
     public DatabaseManager(TMDBMovieRepository tmdbMovieRepository,
                            TMDBLanguageRepository tmdbLanguageRepository,
@@ -38,29 +44,36 @@ public class DatabaseManager {
                            TMDBCountryRepository tmdbCountryRepository,
                            TMDBGenreRepository tmdbGenreRepository,
                            TMDBImageRepository tmdbImageRepository,
+                           TMDBWatchProviderRepository tmdbWatchProviderRepository,
                            TMDBMovieMapper tmdbMovieMapper,
                            TMDBGenreMapper tmdbGenreMapper,
                            TMDBImageMapper tmdbImageMapper,
                            TMDBProductionCompanyMapper tmdbProductionCompanyMapper,
                            TMDBProductionCountryMapper tmdbProductionCountryMapper,
                            TMDBSpokenLanguageMapper tmdbSpokenLanguageMapper,
-                           MetricsCollector metricsCollector
-                           ) {
+                           TMDBWatchProviderMapper tmdbWatchProviderMapper,
+                           MetricsCollector metricsCollector,
+                           TMDBMovieWatchProviderRepository tMDBMovieWatchProviderRepository) {
         this.tmdbMovieRepository = tmdbMovieRepository;
         this.tmdbLanguageRepository = tmdbLanguageRepository;
         this.tmdbCompanyRepository = tmdbCompanyRepository;
         this.tmdbCountryRepository = tmdbCountryRepository;
         this.tmdbGenreRepository = tmdbGenreRepository;
         this.tmdbImageRepository = tmdbImageRepository;
+        this.tmdbWatchProviderRepository = tmdbWatchProviderRepository;
+
         this.tmdbMovieMapper = tmdbMovieMapper;
         this.tmdbGenreMapper = tmdbGenreMapper;
         this.tmdbImageMapper = tmdbImageMapper;
         this.tmdbProductionCompanyMapper = tmdbProductionCompanyMapper;
         this.tmdbProductionCountryMapper = tmdbProductionCountryMapper;
         this.tmdbSpokenLanguageMapper = tmdbSpokenLanguageMapper;
+        this.tmdbWatchProviderMapper = tmdbWatchProviderMapper;
+
         this.metricsCollector = metricsCollector;
 
         this.semaphore = new Semaphore(10);
+        this.tMDBMovieWatchProviderRepository = tMDBMovieWatchProviderRepository;
     }
 
     public void saveEntities(List<Result<?>> results) {
@@ -68,8 +81,10 @@ public class DatabaseManager {
             saveEntity(result);
         }
     }
+
+    //TODO devide into methods
     @Transactional
-    public void saveEntity(Result<?> result) {
+    public Result<?> saveEntity(Result<?> result) {
         Object entity = result.data();
         try {
             this.semaphore.acquire();
@@ -77,7 +92,7 @@ public class DatabaseManager {
                 TMDBMovieEntity movieEntity = tmdbMovieMapper.toEntityFromDomain((TMDBMovieImpl) entity);
                 Set<TMDBGenreEntity> genreEntities = new HashSet<>();
                 for(TMDBGenre genre : ((TMDBMovieImpl) entity).getGenres()) {
-                    Optional<TMDBGenreEntity> genreEntity = tmdbGenreRepository.findByTmdbIdAndName((long) genre.getId(), genre.getName());
+                    Optional<TMDBGenreEntity> genreEntity = tmdbGenreRepository.findByTmdbIdAndName((long) genre.getTmdbId(), genre.getName());
                     genreEntity.ifPresent(genreEntities::add);
                 }
                 movieEntity.setGenres(genreEntities);
@@ -96,34 +111,63 @@ public class DatabaseManager {
                 }
                 movieEntity.setProductionCountries(productionCountries);
 
-                tmdbMovieRepository.save(movieEntity);
+                tmdbMovieRepository.saveAndFlush(movieEntity);
                 metricsCollector.incrementTotalDatabaseSaves();
-            } else
-            if (entity instanceof TMDBGenre) {
+                return null;
+            } else if (entity instanceof TMDBGenre) {
                 tmdbGenreRepository.save(tmdbGenreMapper.toEntityFromDomain((TMDBGenre) entity));
                 metricsCollector.incrementTotalDatabaseSaves();
-            } else
-            if (entity instanceof TMDBProductionCountry) {
+                return null;
+            } else if (entity instanceof TMDBProductionCountry) {
                 tmdbCountryRepository.save(tmdbProductionCountryMapper.toEntityFromDomain((TMDBProductionCountry) entity));
                 metricsCollector.incrementTotalDatabaseSaves();
-            } else
-            if (entity instanceof TMDBProductionCompany) {
+                return null;
+            } else if (entity instanceof TMDBProductionCompany) {
                 tmdbCompanyRepository.save(tmdbProductionCompanyMapper.toEntityFromDomain((TMDBProductionCompany) entity));
                 metricsCollector.incrementTotalDatabaseSaves();
-            } else
-            if (entity instanceof TMDBSpokenLanguage) {
+                return null;
+            } else if (entity instanceof TMDBSpokenLanguage) {
                 tmdbLanguageRepository.save(tmdbSpokenLanguageMapper.toEntityFromDomain((TMDBSpokenLanguage) entity));
                 metricsCollector.incrementTotalDatabaseSaves();
-            } else
-            if (entity instanceof TMDBImageResponse) {
-                tmdbImageRepository.save(tmdbImageMapper.toEntityFromApi((TMDBImageResponse) entity));
-                metricsCollector.incrementTotalDatabaseSaves();
-            }
+                return null;
+            } else if (entity instanceof TMDBImageResponse) {
 
+                TMDBMovieEntity movieEntity = tmdbMovieRepository.findByTmdbIdAndIso6391(((TMDBImageResponse) entity).getTmdbId(), ((TMDBImageResponse) entity).getIso_639_1());
+                if (movieEntity == null) {
+                    return result;
+                }
+                TMDBImageEntity imageEntity = tmdbImageMapper.toEntityFromApi((TMDBImageResponse) entity);
+                imageEntity.setMovie(movieEntity);
+                tmdbImageRepository.save(imageEntity);
+                metricsCollector.incrementTotalDatabaseSaves();
+                return null;
+            } else if (entity instanceof TMDBWatchProvider) {
+                tmdbWatchProviderRepository.save(tmdbWatchProviderMapper.toEntityFromDomain((TMDBWatchProvider) entity));
+                metricsCollector.incrementTotalDatabaseSaves();
+                return null;
+            } else if (entity instanceof TMDBMovieWatchProvider) {
+                TMDBMovieEntity movieEntity = tmdbMovieRepository.findByTmdbIdAndIso6391(((TMDBMovieWatchProvider) entity).getMovieId(), ((TMDBMovieWatchProvider) entity).getIso_639_1());
+                if (movieEntity == null) {
+                    return result;
+                }
+                TMDBWatchProviderEntity watchProviderEntity = tmdbWatchProviderRepository.findByProviderId((long) ((TMDBMovieWatchProvider) entity).getProviderId());
+                TMDBMovieProviderEntity movieProviderEntity = TMDBMovieProviderEntity
+                        .builder()
+                        .tmdbWatchProvider(watchProviderEntity)
+                        .tmdbMovie(movieEntity)
+                        .link(((TMDBMovieWatchProvider) entity).getLink())
+                        .type(((TMDBMovieWatchProvider) entity).getType())
+                        .build();
+                tMDBMovieWatchProviderRepository.save(movieProviderEntity);
+                metricsCollector.incrementTotalDatabaseSaves();
+                return null;
+            }
+            return result;
         } catch(InterruptedException e) {
             e.printStackTrace();
         } finally {
             semaphore.release();
         }
+        return result;
     }
 }

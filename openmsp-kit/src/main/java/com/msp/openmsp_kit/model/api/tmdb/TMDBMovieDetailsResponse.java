@@ -52,7 +52,7 @@ public record TMDBMovieDetailsResponse(
         @JsonProperty("vote_count")
         int voteCount,
         @JsonProperty("genres")
-        List<TMDBGenre> genres,
+        List<TMDBGenreResponse> genres,
         @JsonProperty("production_companies")
         List<TMDBProductionCompany> productionCompanies,
         @JsonProperty("production_countries")

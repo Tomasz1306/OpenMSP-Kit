@@ -10,9 +10,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class TMDBGenre {
-    private int id;
-    private int tmdbId;
+public class TMDBMovieWatchProvider {
+    private String link;
+    private String type;
+    private int providerId;
+    private int movieId;
     private String iso_639_1;
-    private String name;
 }
