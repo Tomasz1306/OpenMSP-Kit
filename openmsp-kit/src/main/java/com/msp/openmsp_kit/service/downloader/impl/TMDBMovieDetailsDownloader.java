@@ -32,11 +32,13 @@ public class TMDBMovieDetailsDownloader implements Downloader<List<TMDBMovieImpl
 
     @Override
     public List<TMDBMovieImpl> fetch(String movieId) {
-        List<TMDBMovieDetailsResponse> moviesDetails = new ArrayList<>();
+        List<TMDBMovieImpl> moviesDetails = new ArrayList<>();
         for (String language : config.getLanguages()) {
-            moviesDetails.add(download(movieId, language));
+            TMDBMovieImpl movie = tmdbMovieMapper.toDomainFromApi((download(movieId, language)));
+            movie.setIso_639_1(language);
+            moviesDetails.add(movie);
         }
-        return moviesDetails.stream().map(tmdbMovieMapper::toDomainFromApi).toList();
+        return moviesDetails;
     }
 
     private TMDBMovieDetailsResponse download(String movieId, String language) {
