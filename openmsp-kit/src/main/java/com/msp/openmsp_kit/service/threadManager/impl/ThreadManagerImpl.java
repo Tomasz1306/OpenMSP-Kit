@@ -1,6 +1,7 @@
 package com.msp.openmsp_kit.service.threadManager.impl;
 
 import com.msp.openmsp_kit.model.api.tmdb.TMDBImageResponse;
+import com.msp.openmsp_kit.model.domain.common.Priority;
 import com.msp.openmsp_kit.model.domain.result.Result;
 import com.msp.openmsp_kit.model.domain.task.Task;
 import com.msp.openmsp_kit.service.database.DatabaseManager;
@@ -28,7 +29,9 @@ public class ThreadManagerImpl implements ThreadManager {
         RUNNING, PAUSED, STOPPED, ERROR
     }
 
-    private final BlockingQueue<Result<?>> databaseQueue;
+    private final BlockingQueue<Result<?>> databaseQueueHighPriority;
+    private final BlockingQueue<Result<?>> databaseQueueMediumPriority;
+    private final BlockingQueue<Result<?>> databaseQueueLowPriority;
     private final BlockingQueue<Result<?>> fileQueue;
 
     private final ExecutorService downloaderService;
@@ -54,7 +57,10 @@ public class ThreadManagerImpl implements ThreadManager {
         fileExecutorService = Executors.newVirtualThreadPerTaskExecutor();
         downloaderService = Executors.newFixedThreadPool(2);
 
-        databaseQueue = new LinkedBlockingQueue<>(1000);
+        databaseQueueHighPriority = new LinkedBlockingQueue<>(2000);
+        databaseQueueMediumPriority = new LinkedBlockingQueue<>(2000);
+        databaseQueueLowPriority = new LinkedBlockingQueue<>(2000);
+
         fileQueue = new LinkedBlockingQueue<>(5000);
         this.databaseManager = databaseManager;
         this.fileManager = fileManager;
@@ -153,6 +159,7 @@ public class ThreadManagerImpl implements ThreadManager {
                 })
                 .flatMap(Collection::stream)
                 .toList();
+
         long endTime = System.currentTimeMillis();
         Duration duration = Duration.ofMillis(endTime - startTime);
 
@@ -163,8 +170,13 @@ public class ThreadManagerImpl implements ThreadManager {
 
         for (Result<?> result : results) {
             try {
-                databaseQueue.put(result);
-                metricsCollector.setdataBaseQueueSize(databaseQueue.size());
+                if (result.priority().equals(Priority.HIGH)) {
+                    databaseQueueHighPriority.put(result);
+                } else if (result.priority().equals(Priority.MEDIUM)) {
+                    databaseQueueMediumPriority.put(result);
+                } else if (result.priority().equals(Priority.LOW)) {
+                    databaseQueueLowPriority.put(result);
+                }
                 if (hasImageToDownload(result)) {
                     metricsCollector.setfileQueueSize(fileQueue.size());
                     fileQueue.put(result);
@@ -177,12 +189,45 @@ public class ThreadManagerImpl implements ThreadManager {
 
     @Override
     public void runDatabaseThread() {
-        while (isRunning() || !databaseQueue.isEmpty()) {
+        while (isRunning() || (
+                            !databaseQueueHighPriority.isEmpty() &&
+                            !databaseQueueMediumPriority.isEmpty() &&
+                            !databaseQueueLowPriority.isEmpty())) {
             try {
-                Result<?> takenResult = databaseQueue.take();
-                databaseExecutorService.submit(() -> {
-                    databaseManager.saveEntity(takenResult);
-                });
+                Result<?> result;
+                if (!databaseQueueHighPriority.isEmpty()) {
+                    result =  databaseQueueHighPriority.take();
+                } else if (!databaseQueueMediumPriority.isEmpty()) {
+                    result =  databaseQueueMediumPriority.take();
+                } else if (!databaseQueueLowPriority.isEmpty()) {
+                    result =  databaseQueueLowPriority.take();
+                } else {
+                    Thread.sleep(1000);
+                    continue;
+                }
+                if (result != null) {
+
+                    databaseExecutorService.execute(() -> {
+                        Result<?> notSavedResult;
+                        notSavedResult = databaseManager.saveEntity(result);
+                        if (notSavedResult != null) {
+                            try {
+                                if (result.priority().equals(Priority.HIGH)) {
+                                    databaseQueueHighPriority.put(notSavedResult);
+                                }
+                                if (result.priority().equals(Priority.MEDIUM)) {
+                                    databaseQueueMediumPriority.put(notSavedResult);
+                                }
+                                if (result.priority().equals(Priority.LOW)) {
+                                    databaseQueueLowPriority.put(notSavedResult);
+                                }
+                            } catch (InterruptedException e) {
+                                throw new RuntimeException(e);
+                            }
+
+                        }
+                    });
+                }
             } catch (InterruptedException e) {
                 metricsCollector.incrementTotalDatabaseFailed();
                 throw new RuntimeException(e);

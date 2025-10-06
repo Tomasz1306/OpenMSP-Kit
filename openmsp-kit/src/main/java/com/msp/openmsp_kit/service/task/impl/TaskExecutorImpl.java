@@ -2,6 +2,8 @@ package com.msp.openmsp_kit.service.task.impl;
 
 import com.msp.openmsp_kit.model.api.tmdb.TMDBImageResponse;
 import com.msp.openmsp_kit.model.domain.common.EndPoint;
+import com.msp.openmsp_kit.model.domain.common.Priority;
+import com.msp.openmsp_kit.model.domain.movie.*;
 import com.msp.openmsp_kit.model.domain.result.Result;
 import com.msp.openmsp_kit.model.domain.task.Task;
 import com.msp.openmsp_kit.service.downloader.DownloaderRegistry;
@@ -28,19 +30,35 @@ public class TaskExecutorImpl implements TaskExecutor {
                 Object data = downloaderRegistry.getDownloader(task.source(), task.resource(), endpoint).fetch(task.id());
                 if (data instanceof List<?>) {
                     for (Object item : (List<?>) data) {
+                        Priority priority = determinePriority(item);
                         if (item instanceof TMDBImageResponse) {
-                            results.add(new Result<>(((TMDBImageResponse) item).getFilePath(), true, item, ""));
+                            results.addLast(new Result<>(((TMDBImageResponse) item).getFilePath(), true, item, "", priority));
                             continue;
                         }
-                        results.add(new Result<>(task.id(), true, item, ""));
+                        results.addLast(new Result<>(task.id(), true, item, "", priority));
                     }
                 } else {
-                    results.add(new Result<>(task.id(), true, data, ""));
+                    Priority priority = determinePriority(data);
+                    results.addLast(new Result<>(task.id(), true, data, "", priority));
                 }
             }
             return results;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private Priority determinePriority(Object object) {
+        if  (object instanceof TMDBGenre ||
+             object instanceof TMDBSpokenLanguage ||
+             object instanceof TMDBProductionCountry) {
+            return Priority.HIGH;
+        } else if (object instanceof TMDBMovieImpl) {
+            return Priority.MEDIUM;
+        } else if (object instanceof TMDBImageResponse ||
+                   object instanceof TMDBMovieWatchProvider) {
+            return Priority.LOW;
+        }
+        return Priority.LOW;
     }
 }
