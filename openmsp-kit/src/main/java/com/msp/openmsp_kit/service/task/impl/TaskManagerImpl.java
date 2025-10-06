@@ -36,7 +36,7 @@ public class TaskManagerImpl {
                         Integer.toString(movie.id()),
                         Source.TMDB,
                         Resource.MOVIE,
-                        Set.of(EndPoint.DETAILS, EndPoint.IMAGES)
+                        Set.of(EndPoint.DETAILS, EndPoint.IMAGES, EndPoint.WATCH_PROVIDERS)
                 )).toList());
     }
 
@@ -45,7 +45,8 @@ public class TaskManagerImpl {
                 new Task("", Source.TMDB, Resource.GENRES, Set.of(EndPoint.CONFIG)),
                 new Task("", Source.TMDB, Resource.COUNTRIES, Set.of(EndPoint.CONFIG)),
 //                new Task("", Source.TMDB, Resource.COMPANIES, Set.of(EndPoint.DETAILS)),
-                new Task("", Source.TMDB, Resource.LANGUAGES, Set.of(EndPoint.CONFIG))
+                new Task("", Source.TMDB, Resource.LANGUAGES, Set.of(EndPoint.CONFIG)),
+                new Task("", Source.TMDB, Resource.WATCH_PROVIDERS, Set.of(EndPoint.CONFIG))
         );
     }
 }
