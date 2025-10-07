@@ -1,8 +1,8 @@
 package com.msp.openmsp_kit.model.mapper;
 
 import com.msp.openmsp_kit.model.api.tmdb.TMDBWatchProviderResponse;
-import com.msp.openmsp_kit.model.domain.movie.TMDBWatchProvider;
-import com.msp.openmsp_kit.model.persistence.entity.TMDBWatchProviderEntity;
+import com.msp.openmsp_kit.model.domain.tmdb.TMDBWatchProvider;
+import com.msp.openmsp_kit.model.persistence.entity.movie.TMDBWatchProviderEntity;
 import org.springframework.stereotype.Component;
 
 @Component

@@ -2,7 +2,7 @@ package com.msp.openmsp_kit.service.downloader.impl;
 
 import com.msp.openmsp_kit.config.OpenMSPConfig;
 import com.msp.openmsp_kit.model.api.tmdb.TMDBCountryResponse;
-import com.msp.openmsp_kit.model.domain.movie.TMDBProductionCountry;
+import com.msp.openmsp_kit.model.domain.tmdb.TMDBProductionCountry;
 import com.msp.openmsp_kit.model.mapper.TMDBProductionCountryMapper;
 import com.msp.openmsp_kit.service.downloader.BuildRequest;
 import com.msp.openmsp_kit.service.downloader.Downloader;

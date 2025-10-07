@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
-public record TMDBGenresResponse(
-        @JsonProperty("genres")
-        List<TMDBMovieGenreResponse> genres
+public record TMDBMovieVideosResponse(
+        @JsonProperty("results")
+        List<TMDBMovieVideoResponse> results
 ) {
 }

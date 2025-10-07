@@ -1,8 +1,8 @@
 package com.msp.openmsp_kit.model.mapper;
 
 import com.msp.openmsp_kit.model.api.tmdb.TMDBCompanyDetailsResponse;
-import com.msp.openmsp_kit.model.domain.movie.TMDBProductionCompany;
-import com.msp.openmsp_kit.model.persistence.entity.TMDBProductionCompanyEntity;
+import com.msp.openmsp_kit.model.domain.tmdb.TMDBProductionCompany;
+import com.msp.openmsp_kit.model.persistence.entity.movie.TMDBProductionCompanyEntity;
 import org.springframework.stereotype.Component;
 
 @Component

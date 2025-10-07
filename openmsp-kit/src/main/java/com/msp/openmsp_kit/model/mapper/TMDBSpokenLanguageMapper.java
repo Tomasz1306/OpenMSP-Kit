@@ -1,8 +1,8 @@
 package com.msp.openmsp_kit.model.mapper;
 
 import com.msp.openmsp_kit.model.api.tmdb.TMDBLanguageResponse;
-import com.msp.openmsp_kit.model.domain.movie.TMDBSpokenLanguage;
-import com.msp.openmsp_kit.model.persistence.entity.TMDBSpokenLanguageEntity;
+import com.msp.openmsp_kit.model.domain.tmdb.TMDBSpokenLanguage;
+import com.msp.openmsp_kit.model.persistence.entity.movie.TMDBSpokenLanguageEntity;
 import org.springframework.stereotype.Component;
 
 @Component

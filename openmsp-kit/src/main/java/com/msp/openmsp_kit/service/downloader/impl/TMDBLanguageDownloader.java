@@ -1,10 +1,8 @@
 package com.msp.openmsp_kit.service.downloader.impl;
 
-import aj.org.objectweb.asm.TypeReference;
 import com.msp.openmsp_kit.config.OpenMSPConfig;
-import com.msp.openmsp_kit.model.api.tmdb.TMDBCountryResponse;
 import com.msp.openmsp_kit.model.api.tmdb.TMDBLanguageResponse;
-import com.msp.openmsp_kit.model.domain.movie.TMDBSpokenLanguage;
+import com.msp.openmsp_kit.model.domain.tmdb.TMDBSpokenLanguage;
 import com.msp.openmsp_kit.model.mapper.TMDBSpokenLanguageMapper;
 import com.msp.openmsp_kit.service.downloader.BuildRequest;
 import com.msp.openmsp_kit.service.downloader.Downloader;

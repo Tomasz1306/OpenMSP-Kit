@@ -1,15 +1,15 @@
 package com.msp.openmsp_kit.model.mapper;
 
 import com.msp.openmsp_kit.model.api.tmdb.TMDBMovieDetailsResponse;
-import com.msp.openmsp_kit.model.domain.movie.TMDBMovieImpl;
-import com.msp.openmsp_kit.model.persistence.entity.TMDBMovieEntity;
+import com.msp.openmsp_kit.model.domain.tmdb.TMDBMovie;
+import com.msp.openmsp_kit.model.persistence.entity.movie.TMDBMovieEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 
 @Component
-public class TMDBMovieMapper implements ToEntityFromDomainMapper<TMDBMovieEntity, TMDBMovieImpl>,
-    ToEntityFromApiMapper<TMDBMovieEntity, TMDBMovieDetailsResponse>, ToDomainFromApiMapper<TMDBMovieImpl, TMDBMovieDetailsResponse> {
+public class TMDBMovieMapper implements ToEntityFromDomainMapper<TMDBMovieEntity, TMDBMovie>,
+    ToEntityFromApiMapper<TMDBMovieEntity, TMDBMovieDetailsResponse>, ToDomainFromApiMapper<TMDBMovie, TMDBMovieDetailsResponse> {
 
     private final TMDBGenreMapper genreMapper;
     private final TMDBProductionCompanyMapper productionCompanyMapper;
@@ -27,7 +27,7 @@ public class TMDBMovieMapper implements ToEntityFromDomainMapper<TMDBMovieEntity
     }
 
     @Override
-    public TMDBMovieEntity toEntityFromDomain(TMDBMovieImpl domain) {
+    public TMDBMovieEntity toEntityFromDomain(TMDBMovie domain) {
         return TMDBMovieEntity.builder()
                 .tmdbId(domain.getTmdbId())
                 .imdbId(domain.getImdbId())
@@ -74,8 +74,8 @@ public class TMDBMovieMapper implements ToEntityFromDomainMapper<TMDBMovieEntity
     }
 
     @Override
-    public TMDBMovieImpl toDomainFromApi(TMDBMovieDetailsResponse response) {
-        return TMDBMovieImpl
+    public TMDBMovie toDomainFromApi(TMDBMovieDetailsResponse response) {
+        return TMDBMovie
                 .builder()
                 .tmdbId(response.tmdbId())
                 .imdbId(response.imdbId())

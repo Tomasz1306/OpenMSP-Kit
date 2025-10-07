@@ -1,10 +1,7 @@
 package com.msp.openmsp_kit.model.api.tmdb;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.msp.openmsp_kit.model.domain.movie.TMDBGenre;
-import com.msp.openmsp_kit.model.domain.movie.TMDBProductionCompany;
-import com.msp.openmsp_kit.model.domain.movie.TMDBProductionCountry;
-import com.msp.openmsp_kit.model.domain.movie.TMDBSpokenLanguage;
+import com.msp.openmsp_kit.model.domain.tmdb.TMDBProductionCompany;
 
 import java.util.List;
 
@@ -52,7 +49,7 @@ public record TMDBMovieDetailsResponse(
         @JsonProperty("vote_count")
         int voteCount,
         @JsonProperty("genres")
-        List<TMDBGenreResponse> genres,
+        List<TMDBMovieGenreResponse> genres,
         @JsonProperty("production_companies")
         List<TMDBProductionCompany> productionCompanies,
         @JsonProperty("production_countries")
