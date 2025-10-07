@@ -50,7 +50,7 @@ public class TaskManagerImpl {
                         Long.toString(person.id()),
                         Source.TMDB,
                         Resource.PEOPLE,
-                        Set.of(EndPoint.DETAILS)
+                        Set.of(EndPoint.DETAILS, EndPoint.IMAGES)
                 )).toList());
         return tasks;
     }
