@@ -6,8 +6,8 @@ import com.msp.openmsp_kit.model.persistence.entity.movie.TMDBImageEntity;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TMDBImageMapper implements ToEntityFromDomainMapper<TMDBImageEntity, TMDBMovieImage>,
-        ToEntityFromApiMapper<TMDBImageEntity, TMDBImageResponse>, ToDomainFromApiMapper<TMDBMovieImage, TMDBImageResponse>{
+public class TMDBMovieImageMapper implements ToEntityFromDomainMapper<TMDBImageEntity, TMDBMovieImage>,
+        ToEntityFromApiMapper<TMDBImageEntity, TMDBImageResponse>, ToDomainFromApiMapper<TMDBMovieImage, TMDBImageResponse> {
     @Override
     public TMDBMovieImage toDomainFromApi(TMDBImageResponse response) {
         return TMDBMovieImage

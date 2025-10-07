@@ -31,8 +31,11 @@ public class TaskExecutorImpl implements TaskExecutor {
                 if (data instanceof List<?>) {
                     for (Object item : (List<?>) data) {
                         Priority priority = determinePriority(item);
-                        if (item instanceof TMDBImageResponse) {
-                            results.addLast(new Result<>(((TMDBImageResponse) item).getFilePath(), true, item, "", priority));
+                        if (item instanceof TMDBMovieImage) {
+                            results.addLast(new Result<>(((TMDBMovieImage) item).getFilePath(), true, item, "", priority));
+                            continue;
+                        } else if (item instanceof TMDBPersonImage) {
+                            results.addLast(new Result<>(((TMDBPersonImage) item).getFilePath(), true, item, "", priority));
                             continue;
                         }
                         results.addLast(new Result<>(task.id(), true, item, "", priority));

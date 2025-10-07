@@ -8,6 +8,7 @@ import com.msp.openmsp_kit.model.mapper.*;
 import com.msp.openmsp_kit.service.downloader.impl.*;
 import com.msp.openmsp_kit.service.downloader.impl.movie.*;
 import com.msp.openmsp_kit.service.downloader.impl.person.TMDBPersonDetailsDownloader;
+import com.msp.openmsp_kit.service.downloader.impl.person.TMDBPersonImagesDownload;
 import com.msp.openmsp_kit.service.parser.JsonParser;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,8 @@ public class DownloaderRegistry {
     private final TMDBProductionCountryMapper tmdbProductionCountryMapper;
     private final TMDBWatchProviderMapper tmdbWatchProviderMapper;
     private final TMDBVideoMapper tmdbVideoMapper;
+    private final TMDBMovieImageMapper tmdbMovieImageMapper;
+    private final TMDBPersonImageMapper tmdbPersonImageMapper;
 
     private final TMDBPersonMapper tmdbPersonMapper;
 
@@ -41,7 +44,9 @@ public class DownloaderRegistry {
                        TMDBProductionCountryMapper tmdbProductionCountryMapper,
                        TMDBWatchProviderMapper tmdbWatchProviderMapper,
                        TMDBVideoMapper tmdbVideoMapper,
-                       TMDBPersonMapper tmdbPersonMapper) {
+                       TMDBPersonMapper tmdbPersonMapper,
+                       TMDBMovieImageMapper tmdbMovieImageMapper,
+                       TMDBPersonImageMapper tmdbPersonImageMapper) {
         this.config = config;
         this.jsonParser = jsonParser;
         this.httpClientManager = httpClientManager;
@@ -52,6 +57,8 @@ public class DownloaderRegistry {
         this.tmdbWatchProviderMapper = tmdbWatchProviderMapper;
         this.tmdbVideoMapper = tmdbVideoMapper;
         this.tmdbPersonMapper = tmdbPersonMapper;
+        this.tmdbMovieImageMapper = tmdbMovieImageMapper;
+        this.tmdbPersonImageMapper = tmdbPersonImageMapper;
 
         initDownloaders();
     }
@@ -83,7 +90,11 @@ public class DownloaderRegistry {
         );
         downloaderMap.put(
                 new DownloaderKey(Source.TMDB, Resource.MOVIE, EndPoint.IMAGES),
-                new TMDBMovieImagesDownloader(httpClientManager, jsonParser, config)
+                new TMDBMovieImagesDownloader(httpClientManager, tmdbMovieImageMapper, jsonParser, config)
+        );
+        downloaderMap.put(
+                new DownloaderKey(Source.TMDB, Resource.PEOPLE, EndPoint.IMAGES),
+                new TMDBPersonImagesDownload(httpClientManager, tmdbPersonImageMapper, jsonParser, config)
         );
         downloaderMap.put(
                 new DownloaderKey(Source.TMDB, Resource.MOVIE, EndPoint.WATCH_PROVIDERS),

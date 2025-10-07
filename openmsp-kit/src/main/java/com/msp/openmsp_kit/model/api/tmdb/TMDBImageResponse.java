@@ -4,23 +4,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
-@Setter
-public class TMDBImageResponse {
+public record TMDBImageResponse(
     @JsonProperty("aspect_ratio")
-    private double aspectRatio;
+    double aspectRatio,
     @JsonProperty("height")
-    private int height;
+    int height,
     @JsonProperty("iso_639_1")
-    private String iso_639_1;
+    String iso_639_1,
     @JsonProperty("file_path")
-    private String filePath;
+    String filePath,
     @JsonProperty("vote_average")
-    private double voteAverage;
+    double voteAverage,
     @JsonProperty("vote_count")
-    private int voteCount;
+    int voteCount,
     @JsonProperty("width")
-    private int width;
-    private String type;
-    private int tmdbId;
+    int width,
+    String type,
+    int tmdbId
+) {
 }

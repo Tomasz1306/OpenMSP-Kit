@@ -1,5 +1,6 @@
 package com.msp.openmsp_kit.model.persistence.entity.person;
 
+import com.msp.openmsp_kit.model.persistence.entity.movie.TMDBImageEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
@@ -51,4 +53,7 @@ public class TMDBPersonEntity {
     String profilePath;
     @Column(name = "iso_639_1")
     String iso6391;
+
+    @OneToMany(mappedBy = "person")
+    Set<TMDBImageEntity> images;
 }

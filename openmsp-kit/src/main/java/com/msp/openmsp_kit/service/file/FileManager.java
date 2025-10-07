@@ -3,6 +3,8 @@ package com.msp.openmsp_kit.service.file;
 import com.msp.openmsp_kit.config.OpenMSPConfig;
 import com.msp.openmsp_kit.model.api.tmdb.TMDBImageResponse;
 import com.msp.openmsp_kit.model.domain.result.Result;
+import com.msp.openmsp_kit.model.domain.tmdb.TMDBMovieImage;
+import com.msp.openmsp_kit.model.domain.tmdb.TMDBPersonImage;
 import com.msp.openmsp_kit.service.downloader.impl.TMDBImagesDownloader;
 import com.msp.openmsp_kit.service.metrics.MetricsCollector;
 import com.msp.openmsp_kit.service.rateLimiter.impl.TMDBFilesRateLimiterImpl;
@@ -40,17 +42,31 @@ public class FileManager {
             System.err.println("Buffered Image is null");
             return;
         }
-        saveFile(image, (TMDBImageResponse) result.data());
-        metricsCollector.incrementTotalFileSaves();
+        if (result.data() instanceof TMDBMovieImage) {
+            TMDBMovieImage tmdbMovieImage = (TMDBMovieImage) result.data();
+            String directoryPath = openMSPConfig.getImagesDestPath() + "/movies/" +
+                    tmdbMovieImage.getTmdbId() + "/" +
+                    tmdbMovieImage.getType() + "/" +
+                    tmdbMovieImage.getIso6391();
+            String fileName = tmdbMovieImage.getFilePath();
+            saveFile(image, directoryPath, fileName);
+            metricsCollector.incrementTotalFileSaves();
+        } else if (result.data() instanceof TMDBPersonImage) {
+            TMDBPersonImage tmdbPersonImage = (TMDBPersonImage) result.data();
+            String directoryPath = openMSPConfig.getImagesDestPath() + "/people/" +
+                    tmdbPersonImage.getPersonId();
+            String fileName = tmdbPersonImage.getFilePath();
+            saveFile(image, directoryPath, fileName);
+            metricsCollector.incrementTotalFileSaves();
+        }
     }
 
-    private void saveFile(BufferedImage bufferedImage, TMDBImageResponse imageDomain) {
+    private void saveFile(BufferedImage bufferedImage, String directoryPath, String fileName) {
         try {
-            String imageDirectoryPath = openMSPConfig.getImagesDestPath() + "/" + imageDomain.getTmdbId() + "/" + imageDomain.getType() + "/" + imageDomain.getIso_639_1();
-            Files.createDirectories(Paths.get(imageDirectoryPath));
+            Files.createDirectories(Paths.get(directoryPath));
             ImageIO.write(bufferedImage,
                     "png",
-                    new File(imageDirectoryPath + imageDomain.getFilePath()));
+                    new File(directoryPath + fileName));
         } catch (IOException e) {
             System.out.println("An error occurred.");
             e.printStackTrace(); 

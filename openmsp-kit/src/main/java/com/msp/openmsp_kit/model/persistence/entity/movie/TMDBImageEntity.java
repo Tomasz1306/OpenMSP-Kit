@@ -1,6 +1,7 @@
 package com.msp.openmsp_kit.model.persistence.entity.movie;
 
 import com.msp.openmsp_kit.model.persistence.entity.AbstractEntity;
+import com.msp.openmsp_kit.model.persistence.entity.person.TMDBPersonEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -41,8 +42,12 @@ public class TMDBImageEntity extends AbstractEntity {
 
 
     @ManyToOne
-    @JoinColumn(name = "tmdb_id", nullable = false)
+    @JoinColumn(name = "tmdb_id")
     private TMDBMovieEntity movie;
+
+    @ManyToOne
+    @JoinColumn(name = "person_id")
+    private TMDBPersonEntity person;
 
     @Override
     public int hashCode() {

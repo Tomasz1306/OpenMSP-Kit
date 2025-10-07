@@ -1,9 +1,10 @@
 package com.msp.openmsp_kit.service.threadManager.impl;
 
-import com.msp.openmsp_kit.model.api.tmdb.TMDBImageResponse;
 import com.msp.openmsp_kit.model.domain.common.Priority;
 import com.msp.openmsp_kit.model.domain.result.Result;
 import com.msp.openmsp_kit.model.domain.task.Task;
+import com.msp.openmsp_kit.model.domain.tmdb.TMDBMovieImage;
+import com.msp.openmsp_kit.model.domain.tmdb.TMDBPersonImage;
 import com.msp.openmsp_kit.service.database.DatabaseManager;
 import com.msp.openmsp_kit.service.file.FileManager;
 import com.msp.openmsp_kit.service.metrics.MetricsCollector;
@@ -189,7 +190,7 @@ public class ThreadManagerImpl implements ThreadManager {
 
     @Override
     public void runDatabaseThread() {
-        while (isRunning() || !allQueuesEmpty()) {
+        while (isRunning()) {
             try {
                 Result<?> result;
                 if (!databaseQueueHighPriority.isEmpty()) {
@@ -234,7 +235,7 @@ public class ThreadManagerImpl implements ThreadManager {
 
     @Override
     public void runFileThread() {
-        while (isRunning() || !fileQueue.isEmpty()) {
+        while (isRunning()) {
             try {
                 Result<?> takenResult = fileQueue.take();
                 fileExecutorService.submit(() -> {
@@ -255,7 +256,8 @@ public class ThreadManagerImpl implements ThreadManager {
 
     @Override
     public boolean hasImageToDownload(Result<?> result) {
-        return result.data() instanceof TMDBImageResponse;
+        return result.data() instanceof TMDBMovieImage ||
+                result.data() instanceof TMDBPersonImage;
     }
 
     @Override

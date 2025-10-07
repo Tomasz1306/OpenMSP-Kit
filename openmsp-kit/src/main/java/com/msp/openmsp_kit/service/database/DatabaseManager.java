@@ -30,7 +30,8 @@ public class DatabaseManager {
 
     private final TMDBMovieMapper tmdbMovieMapper;
     private final TMDBGenreMapper tmdbGenreMapper;
-    private final TMDBImageMapper tmdbImageMapper;
+    private final TMDBMovieImageMapper tmdbMovieImageMapper;
+    private final TMDBPersonImageMapper tmdbPersonImageMapper;
     private final TMDBProductionCompanyMapper tmdbProductionCompanyMapper;
     private final TMDBProductionCountryMapper tmdbProductionCountryMapper;
     private final TMDBSpokenLanguageMapper tmdbSpokenLanguageMapper;
@@ -53,7 +54,8 @@ public class DatabaseManager {
                            TMDBPersonRepository tmdbPersonRepository,
                            TMDBMovieMapper tmdbMovieMapper,
                            TMDBGenreMapper tmdbGenreMapper,
-                           TMDBImageMapper tmdbImageMapper,
+                           TMDBMovieImageMapper tmdbMovieImageMapper,
+                           TMDBPersonImageMapper tmdbPersonImageMapper,
                            TMDBProductionCompanyMapper tmdbProductionCompanyMapper,
                            TMDBProductionCountryMapper tmdbProductionCountryMapper,
                            TMDBSpokenLanguageMapper tmdbSpokenLanguageMapper,
@@ -73,7 +75,8 @@ public class DatabaseManager {
 
         this.tmdbMovieMapper = tmdbMovieMapper;
         this.tmdbGenreMapper = tmdbGenreMapper;
-        this.tmdbImageMapper = tmdbImageMapper;
+        this.tmdbMovieImageMapper = tmdbMovieImageMapper;
+        this.tmdbPersonImageMapper = tmdbPersonImageMapper;
         this.tmdbProductionCompanyMapper = tmdbProductionCompanyMapper;
         this.tmdbProductionCountryMapper = tmdbProductionCountryMapper;
         this.tmdbSpokenLanguageMapper = tmdbSpokenLanguageMapper;
@@ -109,8 +112,10 @@ public class DatabaseManager {
                 success = saveTMDBProductionCompany((TMDBProductionCompany) data);
             } else if (data instanceof TMDBSpokenLanguage) {
                 success = saveTMDBSpokenLanguage((TMDBSpokenLanguage) data);
-            } else if (data instanceof TMDBImageResponse) {
-                success = saveTMDBImage((TMDBImageResponse) data);
+            } else if (data instanceof TMDBMovieImage) {
+                success = saveTMDBMovieImage((TMDBMovieImage) data);
+            } else if (data instanceof TMDBPersonImage) {
+                success = saveTMDBPersonImage((TMDBPersonImage) data);
             } else if (data instanceof TMDBWatchProvider) {
                 success = saveTMDBWatchProvider((TMDBWatchProvider) data);
             } else if (data instanceof TMDBMovieWatchProvider) {
@@ -184,13 +189,25 @@ public class DatabaseManager {
         return true;
     }
 
-    private boolean saveTMDBImage(TMDBImageResponse response) {
-        TMDBMovieEntity movieEntity = tmdbMovieRepository.findByTmdbIdAndIso6391(((TMDBImageResponse) response).getTmdbId(), ((TMDBImageResponse) response).getIso_639_1());
+    private boolean saveTMDBMovieImage(TMDBMovieImage domain) {
+        TMDBMovieEntity movieEntity = tmdbMovieRepository.findByTmdbIdAndIso6391(((TMDBMovieImage) domain).getTmdbId(), ((TMDBMovieImage) domain).getIso6391());
         if (movieEntity == null) {
             return false;
         }
-        TMDBImageEntity imageEntity = tmdbImageMapper.toEntityFromApi((TMDBImageResponse) response);
+        TMDBImageEntity imageEntity = tmdbMovieImageMapper.toEntityFromDomain((TMDBMovieImage) domain);
         imageEntity.setMovie(movieEntity);
+        tmdbImageRepository.save(imageEntity);
+        metricsCollector.incrementTotalDatabaseSaves();
+        return true;
+    }
+
+    private boolean saveTMDBPersonImage(TMDBPersonImage domain) {
+        TMDBPersonEntity movieEntity = tmdbPersonRepository.findByTmdbIdAndIso6391(((TMDBPersonImage) domain).getPersonId(), domain.getIso6391());
+        if (movieEntity == null) {
+            return false;
+        }
+        TMDBImageEntity imageEntity = tmdbPersonImageMapper.toEntityFromDomain((TMDBPersonImage) domain);
+        imageEntity.setPerson(movieEntity);
         tmdbImageRepository.save(imageEntity);
         metricsCollector.incrementTotalDatabaseSaves();
         return true;

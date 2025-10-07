@@ -1,16 +1,16 @@
 package com.msp.openmsp_kit.model.mapper;
 
 import com.msp.openmsp_kit.model.api.tmdb.TMDBImageResponse;
-import com.msp.openmsp_kit.model.domain.tmdb.TMDBMovieImage;
+import com.msp.openmsp_kit.model.domain.tmdb.TMDBPersonImage;
 import com.msp.openmsp_kit.model.persistence.entity.movie.TMDBImageEntity;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TMDBImageMapper implements ToEntityFromDomainMapper<TMDBImageEntity, TMDBMovieImage>,
-        ToEntityFromApiMapper<TMDBImageEntity, TMDBImageResponse>, ToDomainFromApiMapper<TMDBMovieImage, TMDBImageResponse>{
+public class TMDBPersonImageMapper implements ToEntityFromDomainMapper<TMDBImageEntity, TMDBPersonImage>,
+        ToEntityFromApiMapper<TMDBImageEntity, TMDBImageResponse>, ToDomainFromApiMapper<TMDBPersonImage, TMDBImageResponse>{
     @Override
-    public TMDBMovieImage toDomainFromApi(TMDBImageResponse response) {
-        return TMDBMovieImage
+    public TMDBPersonImage toDomainFromApi(TMDBImageResponse response) {
+        return TMDBPersonImage
                 .builder()
                 .type(response.type())
                 .width(response.width())
@@ -24,22 +24,12 @@ public class TMDBImageMapper implements ToEntityFromDomainMapper<TMDBImageEntity
     }
 
     @Override
-    public TMDBImageEntity toEntityFromApi(TMDBImageResponse response) {
-        return TMDBImageEntity
-                .builder()
-                .type(response.type())
-                .width(response.width())
-                .height(response.height())
-                .aspectRatio(response.aspectRatio())
-                .filePath(response.filePath())
-                .iso_639_1(response.iso_639_1())
-                .voteAverage(response.voteAverage())
-                .voteCount(response.voteCount())
-                .build();
+    public TMDBImageEntity toEntityFromApi(TMDBImageResponse domain) {
+        return null;
     }
 
     @Override
-    public TMDBImageEntity toEntityFromDomain(TMDBMovieImage domain) {
+    public TMDBImageEntity toEntityFromDomain(TMDBPersonImage domain) {
         return TMDBImageEntity
                 .builder()
                 .type(domain.getType())
