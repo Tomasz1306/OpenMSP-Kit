@@ -6,4 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 @Repository
 public interface TMDBPersonRepository extends JpaRepository<TMDBPersonEntity, Long> {
+    TMDBPersonEntity findByTmdbId(int tmdbId);
+
+    TMDBPersonEntity findByTmdbIdAndIso6391(int tmdbId, String language);
 }
