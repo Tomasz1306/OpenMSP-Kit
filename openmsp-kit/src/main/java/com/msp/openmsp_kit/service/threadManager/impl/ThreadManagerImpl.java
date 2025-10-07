@@ -189,10 +189,7 @@ public class ThreadManagerImpl implements ThreadManager {
 
     @Override
     public void runDatabaseThread() {
-        while (isRunning() || (
-                            !databaseQueueHighPriority.isEmpty() &&
-                            !databaseQueueMediumPriority.isEmpty() &&
-                            !databaseQueueLowPriority.isEmpty())) {
+        while (isRunning() || !allQueuesEmpty()) {
             try {
                 Result<?> result;
                 if (!databaseQueueHighPriority.isEmpty()) {
@@ -248,6 +245,12 @@ public class ThreadManagerImpl implements ThreadManager {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    private boolean allQueuesEmpty() {
+        return databaseQueueHighPriority.isEmpty() &&
+                databaseQueueMediumPriority.isEmpty() &&
+                databaseQueueLowPriority.isEmpty();
     }
 
     @Override
