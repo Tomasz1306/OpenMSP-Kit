@@ -11,5 +11,6 @@ spring:
 
 tmdb:
   api-key: ${TMDB_API_KEY}
-  source: ${SOURCE}
+  movie-ids-source: ${MOVIE_IDS_SOURCE}
+  person-ids-source: ${PERSON_IDS_SOURCE}
   images-dest-path: ${TMDB_IMAGES_DEST_PATH}

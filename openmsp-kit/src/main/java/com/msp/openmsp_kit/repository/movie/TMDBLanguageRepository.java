@@ -1,6 +1,6 @@
 package com.msp.openmsp_kit.repository.movie;
 
-import com.msp.openmsp_kit.model.persistence.entity.TMDBSpokenLanguageEntity;
+import com.msp.openmsp_kit.model.persistence.entity.movie.TMDBSpokenLanguageEntity;
 import jakarta.data.repository.Repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 

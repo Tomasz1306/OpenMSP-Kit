@@ -13,11 +13,14 @@ public class OpenMSPConfig {
     @Value("${tmdb.api-key}")
     private String tmdbApiKey;
 
-    @Value("${tmdb.source}")
-    private String moviesDataToLoad;
+    @Value("${tmdb.movie-ids-source}")
+    private String moviesDataSource;
 
     @Value("${tmdb.images-dest-path}")
     private String imagesDestPath;
+
+    @Value("${tmdb.person-ids-source}")
+    private String personDataSource;
 
     private List<String> languages = List.of("pl", "en");
 

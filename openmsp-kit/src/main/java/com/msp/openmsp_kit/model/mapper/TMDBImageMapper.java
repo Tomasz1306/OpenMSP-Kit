@@ -1,8 +1,8 @@
 package com.msp.openmsp_kit.model.mapper;
 
 import com.msp.openmsp_kit.model.api.tmdb.TMDBImageResponse;
-import com.msp.openmsp_kit.model.domain.movie.TMDBImage;
-import com.msp.openmsp_kit.model.persistence.entity.TMDBImageEntity;
+import com.msp.openmsp_kit.model.domain.tmdb.TMDBImage;
+import com.msp.openmsp_kit.model.persistence.entity.movie.TMDBImageEntity;
 import org.springframework.stereotype.Component;
 
 @Component

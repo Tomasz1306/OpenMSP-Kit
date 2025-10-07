@@ -1,6 +1,6 @@
 package com.msp.openmsp_kit.repository.movie;
 
-import com.msp.openmsp_kit.model.persistence.entity.TMDBProductionCountryEntity;
+import com.msp.openmsp_kit.model.persistence.entity.movie.TMDBProductionCountryEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

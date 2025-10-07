@@ -6,6 +6,6 @@ import java.util.List;
 
 public record TMDBGenresResponse(
         @JsonProperty("genres")
-        List<TMDBGenreResponse> genres
+        List<TMDBMovieGenreResponse> genres
 ) {
 }

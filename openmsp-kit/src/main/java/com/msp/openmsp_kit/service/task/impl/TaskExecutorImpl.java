@@ -3,9 +3,9 @@ package com.msp.openmsp_kit.service.task.impl;
 import com.msp.openmsp_kit.model.api.tmdb.TMDBImageResponse;
 import com.msp.openmsp_kit.model.domain.common.EndPoint;
 import com.msp.openmsp_kit.model.domain.common.Priority;
-import com.msp.openmsp_kit.model.domain.movie.*;
 import com.msp.openmsp_kit.model.domain.result.Result;
 import com.msp.openmsp_kit.model.domain.task.Task;
+import com.msp.openmsp_kit.model.domain.tmdb.*;
 import com.msp.openmsp_kit.service.downloader.DownloaderRegistry;
 import com.msp.openmsp_kit.service.task.TaskExecutor;
 import org.springframework.stereotype.Service;
@@ -53,7 +53,8 @@ public class TaskExecutorImpl implements TaskExecutor {
              object instanceof TMDBSpokenLanguage ||
              object instanceof TMDBProductionCountry) {
             return Priority.HIGH;
-        } else if (object instanceof TMDBMovieImpl) {
+        } else if (object instanceof TMDBMovie ||
+                   object instanceof TMDBPerson) {
             return Priority.MEDIUM;
         } else if (object instanceof TMDBImageResponse ||
                    object instanceof TMDBMovieWatchProvider) {

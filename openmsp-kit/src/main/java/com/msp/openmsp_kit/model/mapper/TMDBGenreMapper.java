@@ -1,16 +1,16 @@
 package com.msp.openmsp_kit.model.mapper;
 
-import com.msp.openmsp_kit.model.api.tmdb.TMDBGenreResponse;
-import com.msp.openmsp_kit.model.domain.movie.TMDBGenre;
-import com.msp.openmsp_kit.model.persistence.entity.TMDBGenreEntity;
+import com.msp.openmsp_kit.model.api.tmdb.TMDBMovieGenreResponse;
+import com.msp.openmsp_kit.model.domain.tmdb.TMDBGenre;
+import com.msp.openmsp_kit.model.persistence.entity.movie.TMDBGenreEntity;
 import org.springframework.stereotype.Component;
 
 @Component
 public class TMDBGenreMapper implements ToEntityFromDomainMapper<TMDBGenreEntity, TMDBGenre>,
-        ToEntityFromApiMapper<TMDBGenreEntity, TMDBGenreResponse>, ToDomainFromApiMapper<TMDBGenre, TMDBGenreResponse> {
+        ToEntityFromApiMapper<TMDBGenreEntity, TMDBMovieGenreResponse>, ToDomainFromApiMapper<TMDBGenre, TMDBMovieGenreResponse> {
 
     @Override
-    public TMDBGenreEntity toEntityFromApi(TMDBGenreResponse response) {
+    public TMDBGenreEntity toEntityFromApi(TMDBMovieGenreResponse response) {
         return TMDBGenreEntity
                 .builder()
                 .tmdbId(Long.valueOf(response.tmdbId()))
@@ -29,7 +29,7 @@ public class TMDBGenreMapper implements ToEntityFromDomainMapper<TMDBGenreEntity
     }
 
     @Override
-    public TMDBGenre toDomainFromApi(TMDBGenreResponse response) {
+    public TMDBGenre toDomainFromApi(TMDBMovieGenreResponse response) {
         return TMDBGenre
                 .builder()
                 .tmdbId(response.tmdbId())

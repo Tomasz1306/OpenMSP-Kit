@@ -32,7 +32,7 @@ public class TMDBMovieDataLoader implements DataLoader<TMDBMovieId> {
     @Override
     public List<TMDBMovieId> loadData() {
         try {
-            JsonNode jsonNode = objectMapper.readTree(new File(config.getMoviesDataToLoad()));
+            JsonNode jsonNode = objectMapper.readTree(new File(config.getMoviesDataSource()));
             JSONArray jsonArray = new JSONArray(jsonNode.elements().next().toString());
             return jsonArray.toList().stream()
                     .map(jsonData -> {
